@@ -1,26 +1,3 @@
-/*
- * ============================================================
- * CLIMATE FORECAST — STYLES
- * ============================================================
- *
- * Основные цвета:
- *
- * Кнопки:              #00818F
- * Заголовки H1:        #00357A
- * Нижняя навигация:    #011837
- * Навигация/иконки:    #34E1F4
- *
- * Hover кнопок:
- * фон:                 #FFFFFF
- * текст:               #00818F
- * border:              #00818F
- *
- * Карточки:
- * прямоугольные, без скругления
- *
- * ============================================================
- */
-
 * {
     box-sizing: border-box;
 }
@@ -37,24 +14,13 @@ a {
     text-decoration: none;
 }
 
-button,
-input,
-textarea {
-    font-family: inherit;
-}
-
-
-/* ============================================================
-   PHONE SCREEN
-   ============================================================ */
-
 .phone-screen {
     width: 390px;
     min-height: 844px;
     margin: 0 auto;
-    background: #ffffff;
     position: relative;
     overflow: hidden;
+    background: #ffffff;
 }
 
 .light-screen {
@@ -63,35 +29,32 @@ textarea {
 }
 
 
-/* ============================================================
+/* =========================
    FEED
-   ============================================================ */
+   ========================= */
 
 .feed-media {
     height: 780px;
-    background: #3b5469;
     position: relative;
     overflow: hidden;
+    background: #3b5469;
 }
 
 .feed-video {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
 }
 
 .feed-overlay {
     position: absolute;
     inset: 0;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     padding: 28px 22px 30px;
-
     color: #ffffff;
-
     background:
         linear-gradient(
             to bottom,
@@ -111,14 +74,7 @@ textarea {
     display: flex;
     flex-direction: column;
     gap: 13px;
-
     max-width: 100%;
-}
-
-.temperature {
-    font-size: 46px;
-    line-height: 1;
-    font-weight: 700;
 }
 
 .feed-content h1 {
@@ -129,260 +85,112 @@ textarea {
 }
 
 
-/* ============================================================
-   LIKE BUTTON
-   ============================================================ */
+/* =========================
+   TEMPERATURE / INFO
+   ========================= */
 
-.like-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    gap: 7px;
-
-    width: fit-content;
-
-    margin: 0;
-    padding: 0;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
+.temperature {
     color: #ffffff;
-
-    font-size: 16px;
-    font-weight: 400;
-
-    cursor: default;
-    user-select: none;
-
-    appearance: none;
-    -webkit-appearance: none;
-
-    box-shadow: none;
+    font-size: 14px;
+    font-weight: 700;
 }
-
-.like-row:hover {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    box-shadow: none;
-}
-
-.like-row:focus,
-.like-row:active {
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
-}
-
-.heart {
-    display: inline-block;
-
-    color: #ffffff;
-
-    font-size: 25px;
-    line-height: 1;
-}
-
-.like-count {
-    min-width: 12px;
-
-    color: #ffffff;
-
-    line-height: 1;
-}
-
-.like-row.liked .heart {
-    color: #34E1F4;
-    transform: scale(1.12);
-}
-
-.like-row.liked .like-count {
-    color: #34E1F4;
-}
-
-
-/* ============================================================
-   RIGHT INFORMATION
-   ============================================================ */
 
 .feed-info {
-    position: absolute;
-
-    right: 18px;
-    bottom: 125px;
-
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-
-    gap: 16px;
-
-    z-index: 5;
-
-    color: #ffffff;
-
+    gap: 7px;
+    position: absolute;
+    right: 22px;
+    bottom: 170px;
     text-align: right;
 }
 
 .feed-info-item {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-
     gap: 2px;
 }
 
 .feed-info-value {
     color: #ffffff;
-
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 700;
-    line-height: 1.1;
 }
 
 .feed-info-label {
-    color: #ffffff;
-
+    color: rgba(255, 255, 255, 0.75);
     font-size: 9px;
-    font-weight: 700;
-
-    letter-spacing: 0.8px;
-
-    opacity: 0.85;
+    text-transform: uppercase;
 }
 
 
-/* ============================================================
+/* =========================
    GAS CHIPS
-   ============================================================ */
+   ========================= */
 
 .gas-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 7px;
+    gap: 6px;
 }
 
-.gas-chips span {
-    padding: 7px 10px;
-
-    border-radius: 16px;
-
-    background: #00818F;
-    color: #ffffff;
-
-    font-size: 12px;
+.gas-chip {
+    padding: 5px 8px;
+    border-radius: 0;
+    background: #bdd747;
+    color: #3b5469;
+    font-size: 11px;
     font-weight: 700;
 }
 
 
-/* ============================================================
+/* =========================
    DESCRIPTION
-   ============================================================ */
-
-/*
- * Переключение текста выполняется через checkbox.
- * JavaScript для этого не используется.
- */
+   ========================= */
 
 .feed-description {
     margin: 0;
-
     max-width: 72%;
-
     color: #ffffff;
-
     font-size: 13px;
     line-height: 1.35;
 }
 
-
-/*
- * Скрытый checkbox.
- */
-
 .description-toggle {
     position: absolute;
-
     width: 1px;
     height: 1px;
-
     opacity: 0;
     pointer-events: none;
 }
-
-
-/*
- * Контейнер описания.
- */
 
 .description-content {
     display: block;
 }
 
-
-/*
- * Короткое описание.
- *
- * Максимум две строки.
- */
-
 .description-short {
     display: -webkit-box;
-
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-
     overflow: hidden;
-
     color: #ffffff;
 }
-
-
-/*
- * Полное описание.
- *
- * Изначально скрыто.
- */
 
 .description-full {
     display: none;
-
     color: #ffffff;
 }
-
-
-/*
- * Кнопки "Больше" и "Меньше".
- *
- * Они находятся под текстом.
- */
 
 .description-button {
     display: block;
-
     width: fit-content;
-
     margin-top: 5px;
-
     color: #bdd747;
-
     font-size: 13px;
     font-weight: 700;
-
     cursor: pointer;
-
     user-select: none;
 }
-
-
-/*
- * До раскрытия показываем "Больше".
- */
 
 .description-more {
     display: block;
@@ -391,14 +199,6 @@ textarea {
 .description-less {
     display: none;
 }
-
-
-/*
- * После нажатия:
- *
- * короткий текст исчезает;
- * полный текст появляется.
- */
 
 .description-toggle:checked
 ~ .description-content
@@ -412,14 +212,6 @@ textarea {
     display: block;
 }
 
-
-/*
- * После раскрытия:
- *
- * "Больше" исчезает;
- * "Меньше" появляется.
- */
-
 .description-toggle:checked
 ~ .description-content
 .description-more {
@@ -433,29 +225,79 @@ textarea {
 }
 
 
-/* ============================================================
-   BUTTONS
-   ============================================================ */
+/* =========================
+   LIKES
+   ========================= */
+
+.like-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: default;
+    user-select: none;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
+}
+
+.like-row:hover {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #ffffff;
+    box-shadow: none;
+    transform: none;
+}
+
+.like-row:focus,
+.like-row:active {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+.heart {
+    display: inline-block;
+    color: #ffffff;
+    font-size: 25px;
+    line-height: 1;
+}
+
+.like-count {
+    min-width: 12px;
+    color: #ffffff;
+    line-height: 1;
+}
+
+
+/* =========================
+   GREEN BUTTONS
+   ========================= */
 
 .primary-button,
 .add-button {
     width: 100%;
-
     padding: 14px;
-
     border: 1px solid transparent;
-    border-radius: 14px;
-
+    border-radius: 0 !important;
     background: #00818F;
     color: #ffffff;
-
     text-align: center;
-
     font-size: 15px;
     font-weight: 700;
-
     cursor: pointer;
-
     transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -468,49 +310,38 @@ textarea {
     background: #ffffff;
     color: #00818F;
     border-color: #00818F;
-
+    border-radius: 0 !important;
     transform: translateY(-1px);
 }
 
 
-/* ============================================================
+/* =========================
    BOTTOM NAVIGATION
-   ============================================================ */
+   ========================= */
 
 .bottom-nav {
     position: absolute;
-
     bottom: 0;
     left: 0;
     right: 0;
-
+    z-index: 10;
     height: 64px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: #011837;
-
     border-top: 1px solid #011837;
-
-    z-index: 10;
 }
 
 .nav-item {
     flex: 1;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     gap: 4px;
-
     color: #34E1F4;
-
     font-size: 11px;
-
     transition:
         color 0.2s ease,
         transform 0.2s ease;
@@ -531,54 +362,46 @@ textarea {
 }
 
 
-/* ============================================================
+/* =========================
    PAGE HEADER
-   ============================================================ */
+   ========================= */
 
 .page-header {
     padding: 28px 22px 18px;
-
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-
     gap: 12px;
+    background: transparent;
 }
 
 .page-label {
     color: #5d707c;
-
     font-size: 10px;
     font-weight: 700;
-
     letter-spacing: 1.7px;
 }
 
 .page-header h1 {
     margin: 7px 0 0;
-
     color: #00357A;
-
     font-size: 25px;
     line-height: 1.15;
 }
 
 .status-badge {
     padding: 7px 10px;
-
     border-radius: 15px;
-
     background: #bdd747;
     color: #3b5469;
-
     font-size: 11px;
     font-weight: 700;
 }
 
 
-/* ============================================================
-   ADD PAGE
-   ============================================================ */
+/* =========================
+   REQUEST / ADD PAGE
+   ========================= */
 
 .add-content {
     padding: 0 22px 84px;
@@ -590,11 +413,14 @@ textarea {
 
 .form-section h2 {
     margin: 0 0 12px;
-
     color: #3b5469;
-
     font-size: 16px;
 }
+
+
+/* =========================
+   MEDIA UPLOAD
+   ========================= */
 
 .upload-grid {
     display: grid;
@@ -603,166 +429,106 @@ textarea {
 }
 
 .upload-box {
-    height: 115px;
-
+    height: 145px;
     position: relative;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     gap: 7px;
-
     overflow: hidden;
-
-    border: 1px dashed #9aabb5;
+    border: 1px solid #ccd7dd;
     border-radius: 0;
-
     background: #ffffff;
     color: #5d707c;
-
     font-size: 12px;
-
     cursor: pointer;
-
     transition:
         border-color 0.2s ease,
-        background 0.2s ease,
         transform 0.2s ease;
 }
 
 .upload-box:hover {
     border-color: #00818F;
-    background: #f5fbf9;
+    border-radius: 0;
     transform: translateY(-1px);
 }
 
-.upload-icon {
-    color: #00818F;
+.request-upload-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.upload-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: rgba(1, 24, 55, 0.42);
+    color: #ffffff;
+    text-align: center;
+    pointer-events: none;
+}
+
+.upload-overlay .upload-icon {
+    color: #ffffff;
     font-size: 27px;
+    line-height: 1;
+}
+
+.upload-overlay .upload-text {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .file-input {
     position: absolute;
-
     width: 1px;
     height: 1px;
-
     opacity: 0;
-
     overflow: hidden;
-}
-
-
-/* ============================================================
-   MEDIA PREVIEW
-   ============================================================ */
-
-.request-media-preview {
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 10px;
-
-    margin-bottom: 10px;
-}
-
-.request-media-image,
-.request-media-video {
-    height: 115px;
-
-    overflow: hidden;
-
-    background: #3b5469;
-}
-
-.request-media-image img,
-.request-media-video video {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
 }
 
 .media-preview {
-    display: none;
-
     width: 100%;
     height: 100%;
-
+    display: block;
     object-fit: cover;
-
     border-radius: 0;
 }
 
-.upload-box.has-preview {
-    padding: 5px;
-}
 
-.upload-box.has-preview .upload-icon,
-.upload-box.has-preview .upload-text {
-    position: absolute;
-
-    z-index: 2;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    color: #ffffff;
-
-    text-shadow:
-        0 1px 4px rgba(1, 24, 55, 0.8);
-}
-
-.upload-box.has-preview .upload-icon {
-    top: 35%;
-}
-
-.upload-box.has-preview .upload-text {
-    bottom: 10px;
-
-    width: calc(100% - 20px);
-
-    text-align: center;
-
-    font-weight: 700;
-}
-
-
-/* ============================================================
+/* =========================
    FORM FIELDS
-   ============================================================ */
+   ========================= */
 
 .field-label {
     display: block;
-
     margin: 10px 0 6px;
-
     color: #5d707c;
-
     font-size: 11px;
     font-weight: 700;
 }
 
 .field-input {
     width: 100%;
-
+    padding: 11px;
     border: 1px solid #ccd7dd;
     border-radius: 10px;
-
-    padding: 11px;
-
     background: #ffffff;
     color: #3b5469;
-
     font-size: 13px;
-
     outline: none;
-
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -770,7 +536,6 @@ textarea {
 
 .field-input:focus {
     border-color: #00818F;
-
     box-shadow:
         0 0 0 2px rgba(0, 129, 143, 0.12);
 }
@@ -780,47 +545,44 @@ textarea {
     resize: none;
 }
 
-.gas-grid {
-    display: grid;
 
-    grid-template-columns: 1fr;
-
-    gap: 4px;
-}
-
-
-/* ============================================================
-   RESULT CARD
-   ============================================================ */
+/* =========================
+   RESULT
+   ========================= */
 
 .result-card {
     margin-bottom: 20px;
-
     padding: 17px;
-
     border-radius: 0;
-
     background: #011837;
     color: #ffffff;
 }
 
 .result-label {
     display: block;
-
     margin-bottom: 7px;
-
+    color: #ffffff;
     font-size: 9px;
+    font-weight: 700;
     letter-spacing: 1.2px;
 }
 
 .result-card strong {
+    color: #ffffff;
     font-size: 30px;
 }
 
+.result-card p {
+    margin: 10px 0 0;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.4;
+}
 
-/* ============================================================
+
+/* =========================
    CATALOG
-   ============================================================ */
+   ========================= */
 
 .tile-content {
     padding: 0 18px 84px;
@@ -832,9 +594,7 @@ textarea {
 
 .filter-section h2 {
     margin: 0 0 12px;
-
     color: #00357A;
-
     font-size: 17px;
 }
 
@@ -850,28 +610,20 @@ textarea {
 
 .filter-input-wrapper label {
     display: block;
-
     margin-bottom: 6px;
-
     color: #5d707c;
-
     font-size: 9px;
     font-weight: 700;
-
     letter-spacing: 1px;
 }
 
 .input-with-unit {
     display: flex;
     align-items: center;
-
     overflow: hidden;
-
     border: 1px solid #ccd7dd;
     border-radius: 10px;
-
     background: #ffffff;
-
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -879,21 +631,16 @@ textarea {
 
 .input-with-unit:focus-within {
     border-color: #00818F;
-
     box-shadow:
         0 0 0 2px rgba(0, 129, 143, 0.12);
 }
 
 .input-with-unit input {
     width: 100%;
-
+    padding: 11px;
     border: 0;
     outline: 0;
-
-    padding: 11px;
-
     color: #3b5469;
-
     font-size: 13px;
 }
 
@@ -903,25 +650,21 @@ textarea {
 
 .input-with-unit span {
     padding-right: 10px;
-
     color: #5d707c;
-
     font-size: 11px;
 }
 
+
+/* Кнопка Фильтр — прямоугольная */
+
 .filter-form button {
-    border: 1px solid transparent;
-    border-radius: 10px;
-
     padding: 11px 13px;
-
+    border: 1px solid transparent;
+    border-radius: 0 !important;
     background: #00818F;
     color: #ffffff;
-
     font-weight: 700;
-
     cursor: pointer;
-
     transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -932,44 +675,35 @@ textarea {
 .filter-form button:hover {
     background: #ffffff;
     color: #00818F;
-
     border-color: #00818F;
-
+    border-radius: 0 !important;
     transform: translateY(-1px);
 }
 
 .filter-value {
     margin-top: 7px;
-
     color: #5d707c;
-
     font-size: 11px;
     font-weight: 700;
 }
 
 
-/* ============================================================
-   PREDICTION CARDS
-   ============================================================ */
+/* =========================
+   CATALOG CARDS
+   ========================= */
 
 .tile-grid {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 12px;
 }
 
 .prediction-card {
     overflow: hidden;
-
     border-radius: 0;
-
     background: #ffffff;
-
     box-shadow:
         0 3px 12px rgba(1, 24, 55, 0.12);
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -977,39 +711,31 @@ textarea {
 
 .prediction-card:hover {
     transform: translateY(-2px);
-
     box-shadow:
         0 6px 18px rgba(1, 24, 55, 0.18);
 }
 
 .prediction-image-wrapper {
     height: 145px;
-
     position: relative;
-
     overflow: hidden;
 }
 
 .prediction-image {
     width: 100%;
     height: 100%;
-
+    display: block;
     object-fit: cover;
 }
 
 .prediction-temperature {
     position: absolute;
-
     left: 8px;
     bottom: 8px;
-
     padding: 5px 7px;
-
     border-radius: 0;
-
     background: #00818F;
     color: #ffffff;
-
     font-size: 12px;
     font-weight: 700;
 }
@@ -1020,23 +746,24 @@ textarea {
 
 .prediction-card-content h3 {
     min-height: 35px;
-
     margin: 0 0 8px;
-
     color: #00357A;
-
     font-size: 13px;
     line-height: 1.25;
+}
+
+.prediction-concentration {
+    margin-bottom: 8px;
+    color: #5d707c;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .prediction-likes {
     display: flex;
     align-items: center;
-
     gap: 5px;
-
     color: #5d707c;
-
     font-size: 12px;
 }
 
@@ -1047,20 +774,16 @@ textarea {
 
 .empty-catalog {
     grid-column: 1 / -1;
-
     padding: 30px 10px;
-
     color: #5d707c;
-
     text-align: center;
-
     font-size: 13px;
 }
 
 
-/* ============================================================
+/* =========================
    MOBILE
-   ============================================================ */
+   ========================= */
 
 @media (max-width: 390px) {
 

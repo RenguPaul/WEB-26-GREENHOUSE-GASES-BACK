@@ -46,6 +46,22 @@ greenhouse_gases = [
     },
     {
         "id": 4,
+        "name": "Водяной пар",
+        "formula": "H2O",
+        "concentration_ppm": 10000.0,
+        "global_warming_potential_100y": 0.0,
+        "description": (
+            "Водяной пар — наиболее распространённый парниковый газ "
+            "в атмосфере. Его количество связано с температурой и "
+            "круговоротом воды в атмосфере."
+        ),
+        "likes": [1, 2, 4, 6, 8, 10],
+        "status": "published",
+        "image_key": "co2-double.jpg",
+        "video_key": "co2-double.mp4",
+    },
+    {
+        "id": 5,
         "name": "Углекислый газ — расчёт",
         "formula": "CO2",
         "concentration_ppm": 550.0,
@@ -60,7 +76,7 @@ greenhouse_gases = [
         "video_key": "co2-reduction.mp4",
     },
     {
-        "id": 5,
+        "id": 6,
         "name": "Гексафторид серы",
         "formula": "SF6",
         "concentration_ppm": 0.00001,

@@ -8,7 +8,6 @@ from data.collections import greenhouse_gases
 
 
 router = APIRouter()
-
 templates = Jinja2Templates(directory="templates")
 
 MINIO_URL = "http://localhost:9000/climate-media"
@@ -18,12 +17,6 @@ CLIMATE_SENSITIVITY_C = 3.0
 
 
 def get_published_greenhouse_gases():
-    """
-    Возвращает только опубликованные услуги.
-
-    Услуги со статусами draft и deleted
-    в интерфейсе не отображаются.
-    """
     return [
         greenhouse_gas
         for greenhouse_gas in greenhouse_gases
@@ -34,17 +27,12 @@ def get_published_greenhouse_gases():
 def calculate_temperature_change(concentration_ppm: float):
     """
     Упрощённый расчёт изменения средней температуры
-    для CO2 относительно базовой концентрации 280 ppm.
+    относительно доиндустриальной концентрации CO2 = 280 ppm.
 
-    Формула:
+    ΔT = S * log2(C / C0)
 
-        ΔT = S * log2(C / C0)
-
-    где:
-
-        S  = 3 °C
-        C0 = 280 ppm
-        C  = указанная концентрация CO2
+    S  = 3 °C — чувствительность климата
+    C0 = 280 ppm — базовая концентрация CO2
     """
 
     if concentration_ppm <= 0:
@@ -52,30 +40,22 @@ def calculate_temperature_change(concentration_ppm: float):
 
     return round(
         CLIMATE_SENSITIVITY_C
-        * math.log2(
-            concentration_ppm / REFERENCE_CO2_PPM
-        ),
+        * math.log2(concentration_ppm / REFERENCE_CO2_PPM),
         1,
     )
 
 
 def prepare_greenhouse_gas(greenhouse_gas):
     """
-    Подготавливает данные услуги для HTML-шаблона.
+    Подготавливает данные парникового газа для шаблонов.
 
-    Температура здесь НЕ рассчитывается,
-    потому что она является результатом расчёта
-    на странице заявки.
+    Температура здесь НЕ рассчитывается.
     """
 
     prepared = greenhouse_gas.copy()
 
-    # Количество лайков вычисляется из массива ID пользователей.
-    prepared["likes_count"] = len(
-        greenhouse_gas["likes"]
-    )
+    prepared["likes_count"] = len(greenhouse_gas["likes"])
 
-    # Ссылки на медиафайлы MinIO.
     prepared["image_url"] = (
         f"{MINIO_URL}/{greenhouse_gas['image_key']}"
     )
@@ -87,19 +67,20 @@ def prepare_greenhouse_gas(greenhouse_gas):
     return prepared
 
 
-# ============================================================
-# 1. СТРАНИЦА ЗАЯВКИ
-# ============================================================
-
 @router.get(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
 )
-def get_greenhouse_gas_request(request: Request):
+def get_greenhouse_gas_request(
+    request: Request,
+    concentration: float | None = Query(default=None),
+):
     """
-    Получение единственной услуги со статусом draft.
+    Страница создания заявки на расчёт.
 
-    Новые услуги не создаются и не сохраняются.
+    Концентрация передаётся через GET-параметр.
+    Например:
+    /greenhouse-gases/request?concentration=420
     """
 
     draft = next(
@@ -119,11 +100,20 @@ def get_greenhouse_gas_request(request: Request):
 
     greenhouse_gas = prepare_greenhouse_gas(draft)
 
-    # Расчёт показывается только на странице заявки.
+    # Если пользователь ещё ничего не вводил,
+    # показываем исходную концентрацию из черновика.
+    if concentration is None:
+        concentration_value = draft["concentration_ppm"]
+    else:
+        concentration_value = concentration
+
+    greenhouse_gas["concentration_ppm"] = concentration_value
+
+    # Температура рассчитывается только для CO2.
     if draft["formula"] == "CO2":
         greenhouse_gas["temperature_change"] = (
             calculate_temperature_change(
-                draft["concentration_ppm"]
+                concentration_value
             )
         )
     else:
@@ -135,13 +125,10 @@ def get_greenhouse_gas_request(request: Request):
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
+            "concentration": concentration_value,
         },
     )
 
-
-# ============================================================
-# 2. КАТАЛОГ
-# ============================================================
 
 @router.get(
     "/greenhouse-gases/catalog",
@@ -149,15 +136,12 @@ def get_greenhouse_gas_request(request: Request):
 )
 def get_greenhouse_gas_catalog(
     request: Request,
-    concentration: float | None = Query(
-        default=None
-    ),
+    concentration: float | None = Query(default=None),
 ):
     """
-    Список опубликованных услуг.
+    Каталог опубликованных парниковых газов.
 
-    Фильтрация выполняется на сервере
-    по концентрации парникового газа.
+    Фильтр выполняется на сервере по концентрации.
     """
 
     published = get_published_greenhouse_gases()
@@ -166,8 +150,7 @@ def get_greenhouse_gas_catalog(
         published = [
             greenhouse_gas
             for greenhouse_gas in published
-            if greenhouse_gas["concentration_ppm"]
-            <= concentration
+            if greenhouse_gas["concentration_ppm"] <= concentration
         ]
 
     prepared = [
@@ -181,24 +164,15 @@ def get_greenhouse_gas_catalog(
         context={
             "request": request,
             "greenhouse_gases": prepared,
-
-            # Значение фильтра сохраняется после GET-запроса.
             "concentration_filter": (
                 concentration
                 if concentration is not None
                 else 600
             ),
-
-            "filter_applied": (
-                concentration is not None
-            ),
+            "filter_applied": concentration is not None,
         },
     )
 
-
-# ============================================================
-# 3. ЛЕНТА
-# ============================================================
 
 @router.get(
     "/greenhouse-gases/{greenhouse_gas_id}",
@@ -213,13 +187,7 @@ def get_greenhouse_gas(
     ),
 ):
     """
-    Страница услуги в формате вертикальной ленты.
-
-    /greenhouse-gases/1
-        открывает услугу с ID 1.
-
-    /greenhouse-gases/1?next=true
-        открывает следующую опубликованную услугу.
+    Страница конкретного опубликованного парникового газа.
     """
 
     published = get_published_greenhouse_gases()
@@ -227,10 +195,8 @@ def get_greenhouse_gas(
     current_index = next(
         (
             index
-            for index, greenhouse_gas
-            in enumerate(published)
-            if greenhouse_gas["id"]
-            == greenhouse_gas_id
+            for index, greenhouse_gas in enumerate(published)
+            if greenhouse_gas["id"] == greenhouse_gas_id
         ),
         None,
     )
@@ -241,24 +207,17 @@ def get_greenhouse_gas(
             detail="Парниковый газ не найден",
         )
 
-    # Переход к следующей опубликованной услуге.
     if go_next:
-
         next_index = current_index + 1
 
-        # После последней услуги возвращаемся
-        # к первой опубликованной.
         if next_index >= len(published):
             next_index = 0
 
         greenhouse_gas = published[next_index]
-
     else:
         greenhouse_gas = published[current_index]
 
-    prepared = prepare_greenhouse_gas(
-        greenhouse_gas
-    )
+    prepared = prepare_greenhouse_gas(greenhouse_gas)
 
     return templates.TemplateResponse(
         request=request,

@@ -2,13 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Каталог Greenhouse Gases</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог — Greenhouse Gases</title>
 
     <link
         rel="stylesheet"
@@ -21,17 +16,10 @@
 <div class="phone-screen light-screen">
 
     <header class="page-header">
-
         <div>
-            <div class="page-label">
-                GREENHOUSE GASES
-            </div>
-
-            <h1>
-                Каталог
-            </h1>
+            <div class="page-label">GREENHOUSE GASES</div>
+            <h1>Каталог</h1>
         </div>
-
     </header>
 
 
@@ -39,9 +27,7 @@
 
         <section class="filter-section">
 
-            <h2>
-                Концентрация
-            </h2>
+            <h2>Фильтр по концентрации</h2>
 
             <form
                 class="filter-form"
@@ -52,7 +38,7 @@
                 <div class="filter-input-wrapper">
 
                     <label for="concentration">
-                        МАКСИМАЛЬНАЯ КОНЦЕНТРАЦИЯ
+                        Максимальная концентрация
                     </label>
 
                     <div class="input-with-unit">
@@ -62,28 +48,28 @@
                             type="range"
                             name="concentration"
                             min="0"
-                            max="600"
+                            max="10000"
                             step="0.01"
                             value="{{ concentration_filter }}"
                         >
 
-                        <span>
-                            ppm
-                        </span>
+                        <span>ppm</span>
 
+                    </div>
+
+                    <div class="filter-value">
+                        Значение:
+                        {{ concentration_filter }}
+                        ppm
                     </div>
 
                 </div>
 
                 <button type="submit">
-                    Найти
+                    Фильтр
                 </button>
 
             </form>
-
-            <div class="filter-value">
-                {{ concentration_filter }} ppm
-            </div>
 
         </section>
 
@@ -105,10 +91,6 @@
                         alt="{{ greenhouse_gas.name }}"
                     >
 
-                    <div class="prediction-temperature">
-                        {{ greenhouse_gas.concentration_ppm }} ppm
-                    </div>
-
                 </div>
 
 
@@ -118,16 +100,15 @@
                         {{ greenhouse_gas.name }}
                     </h3>
 
+                    <div class="prediction-concentration">
+                        {{ greenhouse_gas.concentration_ppm }} ppm
+                    </div>
+
                     <div class="prediction-likes">
-
-                        <span>
-                            ♡
-                        </span>
-
+                        <span>♡</span>
                         <span>
                             {{ greenhouse_gas.likes_count }}
                         </span>
-
                     </div>
 
                 </div>
@@ -137,7 +118,7 @@
             {% else %}
 
             <div class="empty-catalog">
-                Парниковые газы не найдены.
+                По заданной концентрации парниковые газы не найдены.
             </div>
 
             {% endfor %}
@@ -147,33 +128,33 @@
     </main>
 
 
-    <nav class="bottom-nav">
+    <div class="bottom-nav">
 
         <a
-            class="nav-item"
             href="/greenhouse-gases/1"
+            class="nav-item"
         >
             <span>⌂</span>
             <span>Газ</span>
         </a>
 
         <a
-            class="nav-item"
             href="/greenhouse-gases/request"
+            class="nav-item"
         >
-            <span>＋</span>
+            <span>+</span>
             <span>Заявка</span>
         </a>
 
         <a
-            class="nav-item active"
             href="/greenhouse-gases/catalog"
+            class="nav-item active"
         >
             <span>▦</span>
             <span>Каталог</span>
         </a>
 
-    </nav>
+    </div>
 
 </div>
 
