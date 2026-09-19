@@ -3,11 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Каталог — Greenhouse Gases</title>
 
-    <link rel="stylesheet" href="/static/css/static.css">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/static.css') }}"
+    >
 </head>
 
 <body>
@@ -15,9 +21,15 @@
 <div class="phone-screen light-screen">
 
     <header class="page-header">
+
         <div class="page-header-content">
-            <h1>Каталог</h1>
+
+            <h1>
+                Каталог
+            </h1>
+
         </div>
+
     </header>
 
 
@@ -25,7 +37,9 @@
 
         <section class="filter-section">
 
-            <h2>Фильтр по концентрации</h2>
+            <h2>
+                Фильтр по концентрации
+            </h2>
 
             <form
                 class="filter-form"
@@ -51,12 +65,16 @@
                             value="{{ concentration_filter }}"
                         >
 
-                        <span>ppm</span>
+                        <span>
+                            ppm
+                        </span>
 
                     </div>
 
                     <div class="filter-value">
-                        Значение: {{ concentration_filter }} ppm
+                        Значение:
+                        {{ concentration_filter }}
+                        ppm
                     </div>
 
                 </div>
@@ -83,21 +101,11 @@
 
                     <div class="prediction-image-wrapper">
 
-                        {% if greenhouse_gas.image_url %}
-
                         <img
                             class="prediction-image"
                             src="{{ greenhouse_gas.image_url }}"
                             alt="{{ greenhouse_gas.name }}"
                         >
-
-                        {% else %}
-
-                        <div class="prediction-image default-image">
-                            CO₂
-                        </div>
-
-                        {% endif %}
 
                     </div>
 
@@ -108,13 +116,30 @@
                             {{ greenhouse_gas.name }}
                         </h3>
 
+                        <div class="prediction-formula">
+                            {{ greenhouse_gas.formula }}
+                        </div>
+
                         <div class="prediction-concentration">
-                            {{ greenhouse_gas.concentration_ppm }} ppm
+                            {{ greenhouse_gas.concentration_ppm }}
+                            ppm
+                        </div>
+
+                        <div class="prediction-gwp">
+                            GWP100:
+                            {{ greenhouse_gas.global_warming_potential_100y }}
                         </div>
 
                         <div class="prediction-likes">
-                            <span>♡</span>
-                            <span>{{ greenhouse_gas.likes_count }}</span>
+
+                            <span class="like-icon">
+                                ♡
+                            </span>
+
+                            <span>
+                                {{ greenhouse_gas.likes_count }}
+                            </span>
+
                         </div>
 
                     </div>
@@ -141,7 +166,8 @@
             {% else %}
 
             <div class="empty-catalog">
-                По заданной концентрации парниковые газы не найдены.
+                По заданной концентрации
+                парниковые газы не найдены.
             </div>
 
             {% endfor %}
@@ -154,11 +180,11 @@
     <nav class="bottom-nav">
 
         <a
-            href="/greenhouse-gases/3"
+            href="{% if first_greenhouse_gas_id %}/greenhouse-gases/{{ first_greenhouse_gas_id }}{% else %}/greenhouse-gases/catalog{% endif %}"
             class="nav-item"
         >
             <span class="nav-icon">⌂</span>
-            <span>Газ</span>
+            <span>Лента</span>
         </a>
 
         <a
@@ -183,4 +209,3 @@
 
 </body>
 </html>
-

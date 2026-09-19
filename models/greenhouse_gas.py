@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
@@ -18,6 +18,16 @@ class GreenhouseGas(Base):
     name: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
+    )
+
+    formula: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    global_warming_potential_100y: Mapped[float | None] = mapped_column(
+        Float,
+        nullable=True,
     )
 
     short_description: Mapped[str | None] = mapped_column(
@@ -41,10 +51,12 @@ class GreenhouseGas(Base):
     )
 
     concentration_ppm: Mapped[float | None] = mapped_column(
+        Float,
         nullable=True,
     )
 
     temperature_change_c: Mapped[float | None] = mapped_column(
+        Float,
         nullable=True,
     )
 

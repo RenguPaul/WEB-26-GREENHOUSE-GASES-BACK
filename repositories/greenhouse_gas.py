@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from sqlalchemy import func, select, text
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.greenhouse_gas import GreenhouseGas
 from models.like import Like
+
 
 async def get_published_greenhouse_gases(
     session: AsyncSession,
@@ -27,12 +27,31 @@ async def get_published_greenhouse_gases(
     return list(result.scalars().all())
 
 
-async def get_draft_greenhouse_gas(
+async def get_greenhouse_gas_by_id(
     session: AsyncSession,
+    greenhouse_gas_id: int,
 ) -> GreenhouseGas | None:
     result = await session.execute(
         select(GreenhouseGas)
-        .where(GreenhouseGas.status == "черновик")
+        .where(
+            GreenhouseGas.id == greenhouse_gas_id,
+            GreenhouseGas.status == "опубликован",
+        )
+    )
+
+    return result.scalar_one_or_none()
+
+
+async def get_draft_greenhouse_gas(
+    session: AsyncSession,
+    creator_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.status == "черновик",
+            GreenhouseGas.creator_id == creator_id,
+        )
         .order_by(GreenhouseGas.id)
     )
 
@@ -55,6 +74,7 @@ async def create_draft_greenhouse_gas(
     )
 
     session.add(draft)
+
     await session.commit()
     await session.refresh(draft)
 
@@ -65,6 +85,8 @@ async def publish_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
     short_description: str,
+    formula: str,
+    global_warming_potential_100y: float,
     concentration_ppm: float,
     temperature_change_c: float,
 ) -> GreenhouseGas | None:
@@ -82,6 +104,10 @@ async def publish_greenhouse_gas(
         return None
 
     greenhouse_gas.short_description = short_description
+    greenhouse_gas.formula = formula
+    greenhouse_gas.global_warming_potential_100y = (
+        global_warming_potential_100y
+    )
     greenhouse_gas.concentration_ppm = concentration_ppm
     greenhouse_gas.temperature_change_c = temperature_change_c
     greenhouse_gas.status = "опубликован"
@@ -92,24 +118,26 @@ async def publish_greenhouse_gas(
 
     return greenhouse_gas
 
-from sqlalchemy import text
 
 async def delete_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
 ) -> None:
     await session.execute(
-        text("""
+        text(
+            """
             UPDATE greenhouse_gases
             SET status = 'удален'
             WHERE id = :greenhouse_gas_id
-        """),
+            """
+        ),
         {
             "greenhouse_gas_id": greenhouse_gas_id,
         },
     )
 
     await session.commit()
+
 
 async def get_likes_counts(
     session: AsyncSession,
@@ -123,7 +151,9 @@ async def get_likes_counts(
             Like.greenhouse_gas_id,
             func.count(Like.user_id),
         )
-        .where(Like.greenhouse_gas_id.in_(greenhouse_gas_ids))
+        .where(
+            Like.greenhouse_gas_id.in_(greenhouse_gas_ids)
+        )
         .group_by(Like.greenhouse_gas_id)
     )
 

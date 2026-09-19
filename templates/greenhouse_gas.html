@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -16,10 +15,6 @@
 <body>
 
 <div class="phone-screen">
-
-    <!-- =========================
-         FEED
-    ========================== -->
 
     <div class="feed-media">
 
@@ -39,14 +34,9 @@
 
         <div class="feed-overlay">
 
-            <!-- Название приложения -->
-
             <div class="brand-name">
                 GREENHOUSE GASES
             </div>
-
-
-            <!-- Основная информация -->
 
             <div class="feed-content">
 
@@ -54,29 +44,13 @@
                     {{ greenhouse_gas.name }}
                 </h1>
 
-
-                <!-- Формула -->
-
                 <div class="gas-chips">
-
                     <span>
                         {{ greenhouse_gas.formula }}
                     </span>
-
                 </div>
 
-
-                <!-- =========================
-                     ОПИСАНИЕ
-                ========================== -->
-
                 <div class="feed-description">
-
-                    <!--
-                        Скрытый переключатель.
-
-                        JavaScript не используется.
-                    -->
 
                     <input
                         type="checkbox"
@@ -84,34 +58,15 @@
                         class="description-toggle"
                     >
 
-
                     <div class="description-content">
 
-                        <!--
-                            КОРОТКАЯ ВЕРСИЯ
-
-                            Показываются максимум две строки.
-                        -->
-
                         <div class="description-short">
-                            {{ greenhouse_gas.description }}...
+                            {{ greenhouse_gas.short_description }}
                         </div>
-
-
-                        <!--
-                            ПОЛНАЯ ВЕРСИЯ
-
-                            Изначально скрыта.
-                        -->
 
                         <div class="description-full">
-                            {{ greenhouse_gas.description }}
+                            {{ greenhouse_gas.short_description }}
                         </div>
-
-
-                        <!--
-                            КНОПКА БОЛЬШЕ
-                        -->
 
                         <label
                             for="description-toggle"
@@ -119,11 +74,6 @@
                         >
                             Больше
                         </label>
-
-
-                        <!--
-                            КНОПКА МЕНЬШЕ
-                        -->
 
                         <label
                             for="description-toggle"
@@ -136,9 +86,6 @@
 
                 </div>
 
-
-                <!-- Следующий газ -->
-
                 <a
                     href="/greenhouse-gases/{{ greenhouse_gas.id }}?next=true"
                     class="primary-button"
@@ -148,15 +95,7 @@
 
             </div>
 
-
-            <!-- =========================
-                 ПАРАМЕТРЫ И ЛАЙКИ
-            ========================== -->
-
             <div class="feed-info">
-
-
-                <!-- Концентрация -->
 
                 <div class="feed-info-item">
 
@@ -170,9 +109,6 @@
 
                 </div>
 
-
-                <!-- GWP -->
-
                 <div class="feed-info-item">
 
                     <div class="feed-info-value">
@@ -185,14 +121,26 @@
 
                 </div>
 
+                <div class="feed-info-item">
 
-                <!-- Лайки -->
+                    <div class="feed-info-value">
+                        {% if greenhouse_gas.temperature_change_c > 0 %}
+                            +{{ greenhouse_gas.temperature_change_c }}
+                        {% else %}
+                            {{ greenhouse_gas.temperature_change_c }}
+                        {% endif %}
+                    </div>
+
+                    <div class="feed-info-label">
+                        °C
+                    </div>
+
+                </div>
 
                 <div
                     class="like-row"
                     aria-label="Количество лайков"
                 >
-
                     <span class="heart">
                         ♡
                     </span>
@@ -200,7 +148,6 @@
                     <span class="like-count">
                         {{ greenhouse_gas.likes_count }}
                     </span>
-
                 </div>
 
             </div>
@@ -210,35 +157,29 @@
     </div>
 
 
-    <!-- =========================
-         BOTTOM NAVIGATION
-    ========================== -->
-
     <div class="bottom-nav">
 
         <a
-            href="/greenhouse-gases/1"
+            href="/greenhouse-gases/{{ greenhouse_gas.id }}"
             class="nav-item active"
         >
-            <span>⌂</span>
-            <span>Газ</span>
+            <span class="nav-icon">⌂</span>
+            <span>Лента</span>
         </a>
-
 
         <a
             href="/greenhouse-gases/request"
             class="nav-item"
         >
-            <span>+</span>
+            <span class="nav-icon">+</span>
             <span>Заявка</span>
         </a>
-
 
         <a
             href="/greenhouse-gases/catalog"
             class="nav-item"
         >
-            <span>▦</span>
+            <span class="nav-icon">▦</span>
             <span>Каталог</span>
         </a>
 

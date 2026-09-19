@@ -8,11 +8,18 @@ app = FastAPI(
     title="Greenhouse Gases",
     description=(
         "Сервис прогнозирования изменения температуры Земли "
-        "в зависимости от содержания парниковых газов в атмосфере."
+        "в зависимости от содержания парниковых газов "
+        "в атмосфере."
     ),
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static",
+)
+
 
 app.include_router(router)
 

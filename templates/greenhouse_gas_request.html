@@ -1,16 +1,27 @@
-=<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="ru">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявка — Greenhouse Gases</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Заявка — Greenhouse Gases
+    </title>
 
     <link
         rel="stylesheet"
         href="{{ url_for('static', path='css/static.css') }}"
     >
+
 </head>
+
 
 <body>
 
@@ -19,11 +30,15 @@
     <header class="page-header">
 
         <div>
+
             <div class="page-label">
                 GREENHOUSE GASES
             </div>
 
-            <h1>Заявка</h1>
+            <h1>
+                Заявка
+            </h1>
+
         </div>
 
         <div class="status-badge">
@@ -35,25 +50,23 @@
 
     <main class="add-content">
 
+
         <section class="form-section">
 
-            <h2>Медиафайлы</h2>
+            <h2>
+                Медиафайлы
+            </h2>
+
 
             <div class="upload-grid">
 
                 <label class="upload-box">
 
-                    {% if greenhouse_gas.image_url %}
-                        <img
-                            class="request-upload-media"
-                            src="{{ greenhouse_gas.image_url }}"
-                            alt="{{ greenhouse_gas.name }}"
-                        >
-                    {% else %}
-                        <div class="request-upload-media default-media-placeholder">
-                            Изображение
-                        </div>
-                    {% endif %}
+                    <img
+                        class="request-upload-media"
+                        src="{{ greenhouse_gas.image_url }}"
+                        alt="Изображение парникового газа"
+                    >
 
                     <div class="upload-overlay">
 
@@ -78,29 +91,22 @@
 
                 <label class="upload-box">
 
-                    {% if greenhouse_gas.video_url %}
+                    <video
+                        class="request-upload-media"
+                        muted
+                        loop
+                        autoplay
+                        playsinline
+                        poster="{{ greenhouse_gas.image_url }}"
+                    >
 
-                        <video
-                            class="request-upload-media"
-                            muted
-                            loop
-                            autoplay
-                            playsinline
-                            poster="{{ greenhouse_gas.image_url }}"
+                        <source
+                            src="{{ greenhouse_gas.video_url }}"
+                            type="video/mp4"
                         >
-                            <source
-                                src="{{ greenhouse_gas.video_url }}"
-                                type="video/mp4"
-                            >
-                        </video>
 
-                    {% else %}
+                    </video>
 
-                        <div class="request-upload-media default-media-placeholder">
-                            Видео
-                        </div>
-
-                    {% endif %}
 
                     <div class="upload-overlay">
 
@@ -113,6 +119,7 @@
                         </span>
 
                     </div>
+
 
                     <input
                         class="file-input"
@@ -129,10 +136,15 @@
 
         <section class="form-section">
 
-            <h2>Данные для расчёта</h2>
+            <h2>
+                Данные парникового газа
+            </h2>
 
 
-            <form>
+            <form
+                method="get"
+                action="/greenhouse-gases/request"
+            >
 
                 <label
                     class="field-label"
@@ -162,7 +174,7 @@
                     id="concentration"
                     name="concentration"
                     type="number"
-                    value="{{ concentration if concentration is not none else '' }}"
+                    value="{% if concentration is not none %}{{ concentration }}{% endif %}"
                     min="0.01"
                     step="0.01"
                     required
@@ -171,77 +183,163 @@
 
                 <label
                     class="field-label"
-                    for="description"
+                    for="short_description"
                 >
-                    Описание
+                    Краткое описание
                 </label>
 
                 <textarea
                     class="field-input field-textarea"
-                    id="description"
+                    id="short_description"
                     name="short_description"
                     rows="5"
                 >{{ greenhouse_gas.short_description or '' }}</textarea>
 
 
-                {% if greenhouse_gas.temperature_change_c is not none %}
-
-                <section class="form-section">
-
-                    <div class="result-card">
-
-                        <span class="result-label">
-                            РЕЗУЛЬТАТ РАСЧЁТА
-                        </span>
-
-                        <strong>
-                            {% if greenhouse_gas.temperature_change_c > 0 %}
-                                +{{ greenhouse_gas.temperature_change_c }} °C
-                            {% else %}
-                                {{ greenhouse_gas.temperature_change_c }} °C
-                            {% endif %}
-                        </strong>
-
-                        <p>
-                            Изменение средней температуры
-                            относительно базовой концентрации
-                            CO₂ — 280 ppm.
-                        </p>
-
-                    </div>
-
-                </section>
-
-                {% endif %}
-
-
                 <button
                     class="add-button"
                     type="submit"
-                    formmethod="get"
-                    formaction="/greenhouse-gases/request"
-                    style="margin-top: 12px;"
                 >
-                    Рассчитать
+                    Далее
                 </button>
-
-
-                {% if greenhouse_gas.status == "черновик" %}
-
-                <button
-                    class="add-button"
-                    type="submit"
-                    formmethod="post"
-                    formaction="/greenhouse-gases/publish"
-                >
-                    Опубликовать
-                </button>
-
-                {% endif %}
 
             </form>
 
         </section>
+
+
+        {% if greenhouse_gas.status == "черновик" %}
+
+        <section class="form-section">
+
+            <h2>
+                Публикация
+            </h2>
+
+
+            <form
+                method="post"
+                action="/greenhouse-gases/publish"
+            >
+
+                <label
+                    class="field-label"
+                    for="publish-description"
+                >
+                    Краткая информация
+                </label>
+
+                <textarea
+                    class="field-input field-textarea"
+                    id="publish-description"
+                    name="short_description"
+                    rows="4"
+                    required
+                >{{ greenhouse_gas.short_description or '' }}</textarea>
+
+
+                <label
+                    class="field-label"
+                    for="formula"
+                >
+                    Химическая формула
+                </label>
+
+                <input
+                    class="field-input"
+                    id="formula"
+                    name="formula"
+                    type="text"
+                    value="{{ greenhouse_gas.formula or '' }}"
+                    placeholder="Например, CO₂"
+                    required
+                >
+
+
+                <label
+                    class="field-label"
+                    for="global_warming_potential_100y"
+                >
+                    Потенциал глобального потепления за 100 лет (GWP100)
+                </label>
+
+                <input
+                    class="field-input"
+                    id="global_warming_potential_100y"
+                    name="global_warming_potential_100y"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="{{ greenhouse_gas.global_warming_potential_100y or '' }}"
+                    required
+                >
+
+
+                <label
+                    class="field-label"
+                    for="publish-concentration"
+                >
+                    Концентрация, ppm
+                </label>
+
+                <input
+                    class="field-input"
+                    id="publish-concentration"
+                    name="concentration"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    value="{% if greenhouse_gas.concentration_ppm is not none %}{{ greenhouse_gas.concentration_ppm }}{% endif %}"
+                    required
+                >
+
+
+                {% if greenhouse_gas.temperature_change_c is not none %}
+
+                <div class="result-card">
+
+                    <span class="result-label">
+                        РЕЗУЛЬТАТ РАСЧЁТА
+                    </span>
+
+                    <strong>
+
+                        {% if greenhouse_gas.temperature_change_c > 0 %}
+
+                            +{{ greenhouse_gas.temperature_change_c }} °C
+
+                        {% else %}
+
+                            {{ greenhouse_gas.temperature_change_c }} °C
+
+                        {% endif %}
+
+                    </strong>
+
+                    <p>
+                        Изменение средней температуры
+                        относительно базовой концентрации
+                        CO₂ — 280 ppm.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+
+                <button
+                    class="add-button"
+                    type="submit"
+                >
+                    Опубликовать
+                </button>
+
+            </form>
+
+        </section>
+
+        {% endif %}
+
 
     </main>
 
@@ -249,11 +347,18 @@
     <div class="bottom-nav">
 
         <a
-            href="/greenhouse-gases/1"
+            href="{% if greenhouse_gas.id %}/greenhouse-gases/{{ greenhouse_gas.id }}{% else %}/greenhouse-gases/catalog{% endif %}"
             class="nav-item"
         >
-            <span>⌂</span>
-            <span>Газ</span>
+
+            <span class="nav-icon">
+                ⌂
+            </span>
+
+            <span>
+                Лента
+            </span>
+
         </a>
 
 
@@ -261,8 +366,15 @@
             href="/greenhouse-gases/request"
             class="nav-item active"
         >
-            <span>+</span>
-            <span>Заявка</span>
+
+            <span class="nav-icon">
+                +
+            </span>
+
+            <span>
+                Заявка
+            </span>
+
         </a>
 
 
@@ -270,8 +382,15 @@
             href="/greenhouse-gases/catalog"
             class="nav-item"
         >
-            <span>▦</span>
-            <span>Каталог</span>
+
+            <span class="nav-icon">
+                ▦
+            </span>
+
+            <span>
+                Каталог
+            </span>
+
         </a>
 
     </div>
@@ -279,4 +398,5 @@
 </div>
 
 </body>
+
 </html>
