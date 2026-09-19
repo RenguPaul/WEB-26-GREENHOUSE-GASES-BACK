@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Каталог — Greenhouse Gases</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='css/static.css') }}"
-    >
+    <link rel="stylesheet" href="/static/static.css">
 </head>
 
 <body>
@@ -16,8 +15,7 @@
 <div class="phone-screen light-screen">
 
     <header class="page-header">
-        <div>
-            <div class="page-label">GREENHOUSE GASES</div>
+        <div class="page-header-content">
             <h1>Каталог</h1>
         </div>
     </header>
@@ -58,9 +56,7 @@
                     </div>
 
                     <div class="filter-value">
-                        Значение:
-                        {{ concentration_filter }}
-                        ppm
+                        Значение: {{ concentration_filter }} ppm
                     </div>
 
                 </div>
@@ -78,42 +74,69 @@
 
             {% for greenhouse_gas in greenhouse_gases %}
 
-            <a
-                href="/greenhouse-gases/{{ greenhouse_gas.id }}"
-                class="prediction-card"
-            >
+            <div class="prediction-card-container">
 
-                <div class="prediction-image-wrapper">
+                <a
+                    href="/greenhouse-gases/{{ greenhouse_gas.id }}"
+                    class="prediction-card"
+                >
 
-                    <img
-                        class="prediction-image"
-                        src="{{ greenhouse_gas.image_url }}"
-                        alt="{{ greenhouse_gas.name }}"
+                    <div class="prediction-image-wrapper">
+
+                        {% if greenhouse_gas.image_url %}
+
+                        <img
+                            class="prediction-image"
+                            src="{{ greenhouse_gas.image_url }}"
+                            alt="{{ greenhouse_gas.name }}"
+                        >
+
+                        {% else %}
+
+                        <div class="prediction-image default-image">
+                            CO₂
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="prediction-card-content">
+
+                        <h3>
+                            {{ greenhouse_gas.name }}
+                        </h3>
+
+                        <div class="prediction-concentration">
+                            {{ greenhouse_gas.concentration_ppm }} ppm
+                        </div>
+
+                        <div class="prediction-likes">
+                            <span>♡</span>
+                            <span>{{ greenhouse_gas.likes_count }}</span>
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <form
+                    method="post"
+                    action="/greenhouse-gases/{{ greenhouse_gas.id }}/delete"
+                >
+
+                    <button
+                        type="submit"
+                        class="delete-button"
                     >
+                        Удалить
+                    </button>
 
-                </div>
+                </form>
 
-
-                <div class="prediction-card-content">
-
-                    <h3>
-                        {{ greenhouse_gas.name }}
-                    </h3>
-
-                    <div class="prediction-concentration">
-                        {{ greenhouse_gas.concentration_ppm }} ppm
-                    </div>
-
-                    <div class="prediction-likes">
-                        <span>♡</span>
-                        <span>
-                            {{ greenhouse_gas.likes_count }}
-                        </span>
-                    </div>
-
-                </div>
-
-            </a>
+            </div>
 
             {% else %}
 
@@ -128,13 +151,13 @@
     </main>
 
 
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
 
         <a
-            href="/greenhouse-gases/1"
+            href="/greenhouse-gases/3"
             class="nav-item"
         >
-            <span>⌂</span>
+            <span class="nav-icon">⌂</span>
             <span>Газ</span>
         </a>
 
@@ -142,7 +165,7 @@
             href="/greenhouse-gases/request"
             class="nav-item"
         >
-            <span>+</span>
+            <span class="nav-icon">+</span>
             <span>Заявка</span>
         </a>
 
@@ -150,13 +173,14 @@
             href="/greenhouse-gases/catalog"
             class="nav-item active"
         >
-            <span>▦</span>
+            <span class="nav-icon">▦</span>
             <span>Каталог</span>
         </a>
 
-    </div>
+    </nav>
 
 </div>
 
 </body>
 </html>
+
