@@ -328,8 +328,6 @@ a {
 
 /* ========================================
    BOTTOM NAVIGATION
-   ВАЖНО:
-   НИКАКИХ КНОПОЧНЫХ СТИЛЕЙ
    ======================================== */
 
 .bottom-nav {
@@ -366,12 +364,6 @@ a {
     justify-content: center;
 
     gap: 4px;
-
-    /*
-        ВАЖНО:
-        пункт навигации полностью прозрачен.
-        Никакой кнопки здесь нет.
-    */
 
     background: transparent !important;
 
@@ -443,11 +435,6 @@ a {
     line-height: 1;
 }
 
-/*
-   Активная вкладка НЕ выделяется
-   белым прямоугольником.
-*/
-
 .nav-item.active {
     background: transparent !important;
 
@@ -458,11 +445,6 @@ a {
 
     color: #34E1F4;
 }
-
-/*
-   Hover подсвечивает именно
-   пункт навигации и иконку.
-*/
 
 .nav-item:hover {
     background: transparent !important;
@@ -766,16 +748,21 @@ a {
     font-size: 17px;
 }
 
+
+/*
+   ФИЛЬТР
+
+   Слайдер и кнопка находятся
+   на одном горизонтальном уровне.
+*/
+
 .filter-form {
-    display: flex;
-
-    align-items: flex-end;
-
-    gap: 8px;
+    width: 100%;
 }
 
 .filter-input-wrapper {
-    flex: 1;
+    width: 100%;
+    min-width: 0;
 }
 
 .filter-input-wrapper label {
@@ -791,11 +778,30 @@ a {
     letter-spacing: 1px;
 }
 
-.input-with-unit {
+
+/* Строка со слайдером и кнопкой */
+
+.filter-row {
+    width: 100%;
+
     display: flex;
     align-items: center;
 
-    overflow: hidden;
+    gap: 8px;
+}
+
+.input-with-unit {
+    flex: 1 1 auto;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+
+    height: 38px;
+
+    overflow: visible;
 
     border: 1px solid #ccd7dd;
     border-radius: 10px;
@@ -804,8 +810,12 @@ a {
 }
 
 .input-with-unit input {
+    flex: 1 1 auto;
+
+    min-width: 0;
     width: 100%;
 
+    margin: 0;
     padding: 8px 10px;
 
     border: 0;
@@ -814,7 +824,93 @@ a {
     color: #3b5469;
 }
 
+.input-with-unit input[type="range"] {
+    display: block;
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+    width: 100%;
+
+    height: 20px;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    accent-color: #00818F;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    cursor: pointer;
+}
+
+
+/* Chrome / Edge / Safari */
+
+.input-with-unit input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+
+    background: #ccd7dd;
+
+    border: 0;
+    border-radius: 2px;
+}
+
+.input-with-unit input[type="range"]::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+
+    margin-top: -6px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #00818F;
+
+    cursor: pointer;
+}
+
+
+/* Firefox */
+
+.input-with-unit input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 4px;
+
+    background: #ccd7dd;
+
+    border: 0;
+    border-radius: 2px;
+}
+
+.input-with-unit input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #00818F;
+
+    cursor: pointer;
+}
+
+
+/* ppm */
+
 .input-with-unit span {
+    flex: 0 0 auto;
+
     padding-right: 10px;
 
     color: #5d707c;
@@ -822,8 +918,15 @@ a {
     font-size: 11px;
 }
 
-.filter-form button {
-    padding: 11px 13px;
+
+/* Кнопка фильтра */
+
+.filter-row button {
+    flex: 0 0 auto;
+
+    height: 38px;
+
+    padding: 0 13px;
 
     border: 1px solid transparent;
     border-radius: 0 !important;
@@ -842,7 +945,7 @@ a {
         transform 0.2s ease;
 }
 
-.filter-form button:hover {
+.filter-row button:hover {
     background: #ffffff;
     color: #00818F;
 

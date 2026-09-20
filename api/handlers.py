@@ -131,6 +131,10 @@ async def get_greenhouse_gas_request(
             creator_id=CURRENT_USER_ID,
         )
 
+        published = await get_published_greenhouse_gases(
+            session=session,
+        )
+
     greenhouse_gas = None
 
     if draft is not None:
@@ -138,12 +142,19 @@ async def get_greenhouse_gas_request(
             draft
         )
 
+    first_greenhouse_gas_id = (
+        published[0].id
+        if published
+        else None
+    )
+
     return templates.TemplateResponse(
         request=request,
         name="greenhouse_gas_request.html",
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
+            "first_greenhouse_gas_id": first_greenhouse_gas_id,
         },
     )
 
@@ -365,6 +376,10 @@ async def get_greenhouse_gas_catalog(
     ),
 ):
     async with async_session_maker() as session:
+        all_published = await get_published_greenhouse_gases(
+            session=session,
+        )
+
         published = await get_published_greenhouse_gases(
             session=session,
             concentration=concentration,
@@ -390,8 +405,8 @@ async def get_greenhouse_gas_catalog(
     ]
 
     first_greenhouse_gas_id = (
-        prepared[0]["id"]
-        if prepared
+        all_published[0].id
+        if all_published
         else None
     )
 

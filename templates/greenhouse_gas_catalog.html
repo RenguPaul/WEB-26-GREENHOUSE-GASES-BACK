@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -57,35 +58,39 @@
                         Максимальная концентрация
                     </label>
 
-                    <div class="input-with-unit">
+                    <div class="filter-row">
 
-                        <input
-                            id="concentration"
-                            type="range"
-                            name="concentration"
-                            min="0"
-                            max="10000"
-                            step="0.01"
-                            value="{{ concentration_filter }}"
-                        >
+                        <div class="input-with-unit">
 
-                        <span>
-                            ppm
-                        </span>
+                            <input
+                                id="concentration"
+                                type="range"
+                                name="concentration"
+                                min="0"
+                                max="10000"
+                                step="0.01"
+                                value="{{ concentration_filter if concentration_filter is not none else 10000 }}"
+                            >
+
+                            <span>
+                                ppm
+                            </span>
+
+                        </div>
+
+                        <button type="submit">
+                            Фильтр
+                        </button>
 
                     </div>
 
                     <div class="filter-value">
                         Значение:
-                        {{ concentration_filter }}
+                        {{ concentration_filter if concentration_filter is not none else 10000 }}
                         ppm
                     </div>
 
                 </div>
-
-                <button type="submit">
-                    Фильтр
-                </button>
 
             </form>
 
