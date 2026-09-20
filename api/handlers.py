@@ -115,7 +115,7 @@ async def delete_greenhouse_gas_request(
 
 
 # =========================================================
-# GET: СТРАНИЦА ЗАЯВКИ
+# GET: СТРАНИЦА СОЗДАНИЯ / ПУБЛИКАЦИИ
 # =========================================================
 
 @router.get(
@@ -124,61 +124,19 @@ async def delete_greenhouse_gas_request(
 )
 async def get_greenhouse_gas_request(
     request: Request,
-    concentration: float | None = Query(default=None),
-    short_description: str | None = Query(default=None),
 ):
     async with async_session_maker() as session:
         draft = await get_draft_greenhouse_gas(
-            session,
-            CURRENT_USER_ID,
+            session=session,
+            creator_id=CURRENT_USER_ID,
         )
 
-    if draft is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Черновик парникового газа не найден",
+    greenhouse_gas = None
+
+    if draft is not None:
+        greenhouse_gas = serialize_greenhouse_gas(
+            draft
         )
-
-    concentration_value = (
-        draft.concentration_ppm
-        if concentration is None
-        else concentration
-    )
-
-    description_value = (
-        draft.short_description
-        if short_description is None
-        else short_description
-    )
-
-    temperature_change = None
-
-    if concentration_value is not None:
-        temperature_change = calculate_temperature_change(
-            concentration_value
-        )
-
-    greenhouse_gas = {
-        "id": draft.id,
-        "name": draft.name,
-        "formula": draft.formula,
-        "global_warming_potential_100y": (
-            draft.global_warming_potential_100y
-        ),
-        "short_description": description_value,
-        "status": draft.status,
-        "image_url": get_media_url(
-            draft.image_url,
-            DEFAULT_IMAGE_URL,
-        ),
-        "video_url": get_media_url(
-            draft.video_url,
-            DEFAULT_VIDEO_URL,
-        ),
-        "concentration_ppm": concentration_value,
-        "temperature_change_c": temperature_change,
-        "likes_count": 0,
-    }
 
     return templates.TemplateResponse(
         request=request,
@@ -186,7 +144,6 @@ async def get_greenhouse_gas_request(
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
-            "concentration": concentration_value,
         },
     )
 
@@ -202,10 +159,22 @@ async def get_greenhouse_gas_request(
 async def create_greenhouse_gas_request(
     request: Request,
 ):
+    form = await request.form()
+
+    name = str(
+        form.get("name", "")
+    ).strip()
+
+    if not name:
+        raise HTTPException(
+            status_code=400,
+            detail="Название парникового газа не указано",
+        )
+
     async with async_session_maker() as session:
         existing_draft = await get_draft_greenhouse_gas(
-            session,
-            CURRENT_USER_ID,
+            session=session,
+            creator_id=CURRENT_USER_ID,
         )
 
         if existing_draft is not None:
@@ -213,25 +182,18 @@ async def create_greenhouse_gas_request(
                 existing_draft
             )
 
-            greenhouse_gas["likes_count"] = 0
-
             return templates.TemplateResponse(
                 request=request,
                 name="greenhouse_gas_request.html",
                 context={
                     "request": request,
                     "greenhouse_gas": greenhouse_gas,
-                    "concentration": (
-                        existing_draft.concentration_ppm
-                    ),
                 },
             )
 
         draft = await create_draft_greenhouse_gas(
             session=session,
-            name="Новый парниковый газ",
-            image_url=None,
-            video_url=None,
+            name=name,
             creator_id=CURRENT_USER_ID,
         )
 
@@ -239,15 +201,12 @@ async def create_greenhouse_gas_request(
         draft
     )
 
-    greenhouse_gas["likes_count"] = 0
-
     return templates.TemplateResponse(
         request=request,
         name="greenhouse_gas_request.html",
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
-            "concentration": None,
         },
     )
 
@@ -349,8 +308,8 @@ async def publish_greenhouse_gas_request(
 
     async with async_session_maker() as session:
         draft = await get_draft_greenhouse_gas(
-            session,
-            CURRENT_USER_ID,
+            session=session,
+            creator_id=CURRENT_USER_ID,
         )
 
         if draft is None:
@@ -401,17 +360,19 @@ async def publish_greenhouse_gas_request(
 )
 async def get_greenhouse_gas_catalog(
     request: Request,
-    concentration: float | None = Query(default=None),
+    concentration: float | None = Query(
+        default=None
+    ),
 ):
     async with async_session_maker() as session:
         published = await get_published_greenhouse_gases(
-            session,
+            session=session,
             concentration=concentration,
         )
 
         likes_counts = await get_likes_counts(
-            session,
-            [
+            session=session,
+            greenhouse_gas_ids=[
                 greenhouse_gas.id
                 for greenhouse_gas in published
             ],
@@ -440,11 +401,7 @@ async def get_greenhouse_gas_catalog(
         context={
             "request": request,
             "greenhouse_gases": prepared,
-            "concentration_filter": (
-                concentration
-                if concentration is not None
-                else 600
-            ),
+            "concentration_filter": concentration,
             "filter_applied": (
                 concentration is not None
             ),
@@ -473,12 +430,12 @@ async def get_greenhouse_gas(
 ):
     async with async_session_maker() as session:
         published = await get_published_greenhouse_gases(
-            session
+            session=session,
         )
 
         likes_counts = await get_likes_counts(
-            session,
-            [
+            session=session,
+            greenhouse_gas_ids=[
                 greenhouse_gas.id
                 for greenhouse_gas in published
             ],

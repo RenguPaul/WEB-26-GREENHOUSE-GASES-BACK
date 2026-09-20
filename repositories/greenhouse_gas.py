@@ -61,15 +61,13 @@ async def get_draft_greenhouse_gas(
 async def create_draft_greenhouse_gas(
     session: AsyncSession,
     name: str,
-    image_url: str | None,
-    video_url: str | None,
     creator_id: int,
 ) -> GreenhouseGas:
     draft = GreenhouseGas(
         name=name,
         status="черновик",
-        image_url=image_url,
-        video_url=video_url,
+        image_url=None,
+        video_url=None,
         creator_id=creator_id,
     )
 

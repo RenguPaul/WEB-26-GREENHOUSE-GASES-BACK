@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>{{ greenhouse_gas.name }}</title>
 
@@ -45,9 +49,11 @@
                 </h1>
 
                 <div class="gas-chips">
+
                     <span>
                         {{ greenhouse_gas.formula }}
                     </span>
+
                 </div>
 
                 <div class="feed-description">
@@ -157,14 +163,14 @@
     </div>
 
 
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
 
         <a
             href="/greenhouse-gases/{{ greenhouse_gas.id }}"
             class="nav-item active"
         >
             <span class="nav-icon">⌂</span>
-            <span>Лента</span>
+            <span class="nav-label">Лента</span>
         </a>
 
         <a
@@ -172,7 +178,7 @@
             class="nav-item"
         >
             <span class="nav-icon">+</span>
-            <span>Заявка</span>
+            <span class="nav-label">Заявка</span>
         </a>
 
         <a
@@ -180,10 +186,10 @@
             class="nav-item"
         >
             <span class="nav-icon">▦</span>
-            <span>Каталог</span>
+            <span class="nav-label">Каталог</span>
         </a>
 
-    </div>
+    </nav>
 
 </div>
 
