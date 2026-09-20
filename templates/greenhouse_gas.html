@@ -1,27 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{{ greenhouse_gas.name }}</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='css/static.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', path='css/static.css') }}">
 </head>
 
 <body>
 
-<div class="phone-screen">
+<div class="phone-screen feed-screen">
 
-    <!-- =========================
-         FEED
-    ========================== -->
-
-    <div class="feed-media">
+    <main class="feed-media">
 
         <video
             class="feed-video"
@@ -31,218 +21,128 @@
             playsinline
             poster="{{ greenhouse_gas.image_url }}"
         >
-            <source
-                src="{{ greenhouse_gas.video_url }}"
-                type="video/mp4"
-            >
+            <source src="{{ greenhouse_gas.video_url }}" type="video/mp4">
         </video>
 
         <div class="feed-overlay">
 
-            <!-- Название приложения -->
-
-            <div class="brand-name">
-                GREENHOUSE GASES
+            <div class="feed-top">
+                <div class="brand-name">
+                    GREENHOUSE GASES
+                </div>
             </div>
 
+            <div class="feed-bottom">
 
-            <!-- Основная информация -->
+                <div class="feed-content">
 
-            <div class="feed-content">
+                    <h1>{{ greenhouse_gas.name }}</h1>
 
-                <h1>
-                    {{ greenhouse_gas.name }}
-                </h1>
+                    <div class="gas-chips">
+                        <span>{{ greenhouse_gas.formula }}</span>
+                    </div>
 
+                    <div class="feed-description">
+                        <input
+                            type="checkbox"
+                            id="description-toggle"
+                            class="description-toggle"
+                        >
 
-                <!-- Формула -->
+                        <div class="description-content">
+                            <div class="description-short">
+                                {{ greenhouse_gas.description }}...
+                            </div>
+                            <div class="description-full">
+                                {{ greenhouse_gas.description }}
+                            </div>
 
-                <div class="gas-chips">
+                            <label
+                                for="description-toggle"
+                                class="description-button description-more"
+                            >
+                                Больше
+                            </label>
 
-                    <span>
-                        {{ greenhouse_gas.formula }}
-                    </span>
+                            <label
+                                for="description-toggle"
+                                class="description-button description-less"
+                            >
+                                Меньше
+                            </label>
+                        </div>
+                    </div>
 
-                </div>
-
-
-                <!-- =========================
-                     ОПИСАНИЕ
-                ========================== -->
-
-                <div class="feed-description">
-
-                    <!--
-                        Скрытый переключатель.
-
-                        JavaScript не используется.
-                    -->
-
-                    <input
-                        type="checkbox"
-                        id="description-toggle"
-                        class="description-toggle"
+                    <a
+                        href="/greenhouse-gases/{{ greenhouse_gas.id }}?next=true"
+                        class="primary-button"
                     >
+                        Следующий
+                    </a>
 
+                </div>
 
-                    <div class="description-content">
+                <aside class="feed-info">
 
-                        <!--
-                            КОРОТКАЯ ВЕРСИЯ
-
-                            Показываются максимум две строки.
-                        -->
-
-                        <div class="description-short">
-                            {{ greenhouse_gas.description }}...
+                    <div class="feed-info-item">
+                        <div class="feed-info-value">
+                            {{ greenhouse_gas.concentration_ppm }}
                         </div>
+                        <div class="feed-info-label">ppm</div>
+                    </div>
 
-
-                        <!--
-                            ПОЛНАЯ ВЕРСИЯ
-
-                            Изначально скрыта.
-                        -->
-
-                        <div class="description-full">
-                            {{ greenhouse_gas.description }}
+                    <div class="feed-info-item">
+                        <div class="feed-info-value">
+                            {{ greenhouse_gas.global_warming_potential_100y }}
                         </div>
-
-
-                        <!--
-                            КНОПКА БОЛЬШЕ
-                        -->
-
-                        <label
-                            for="description-toggle"
-                            class="description-button description-more"
-                        >
-                            Больше
-                        </label>
-
-
-                        <!--
-                            КНОПКА МЕНЬШЕ
-                        -->
-
-                        <label
-                            for="description-toggle"
-                            class="description-button description-less"
-                        >
-                            Меньше
-                        </label>
-
+                        <div class="feed-info-label">GWP100</div>
                     </div>
 
-                </div>
-
-
-                <!-- Следующий газ -->
-
-                <a
-                    href="/greenhouse-gases/{{ greenhouse_gas.id }}?next=true"
-                    class="primary-button"
-                >
-                    Следующий
-                </a>
-
-            </div>
-
-
-            <!-- =========================
-                 ПАРАМЕТРЫ И ЛАЙКИ
-            ========================== -->
-
-            <div class="feed-info">
-
-
-                <!-- Концентрация -->
-
-                <div class="feed-info-item">
-
-                    <div class="feed-info-value">
-                        {{ greenhouse_gas.concentration_ppm }}
+                    <div class="like-row" aria-label="Количество лайков">
+                        <span class="heart">♡</span>
+                        <span class="like-count">
+                            {{ greenhouse_gas.likes_count }}
+                        </span>
                     </div>
 
-                    <div class="feed-info-label">
-                        ppm
-                    </div>
-
-                </div>
-
-
-                <!-- GWP -->
-
-                <div class="feed-info-item">
-
-                    <div class="feed-info-value">
-                        {{ greenhouse_gas.global_warming_potential_100y }}
-                    </div>
-
-                    <div class="feed-info-label">
-                        GWP100
-                    </div>
-
-                </div>
-
-
-                <!-- Лайки -->
-
-                <div
-                    class="like-row"
-                    aria-label="Количество лайков"
-                >
-
-                    <span class="heart">
-                        ♡
-                    </span>
-
-                    <span class="like-count">
-                        {{ greenhouse_gas.likes_count }}
-                    </span>
-
-                </div>
+                </aside>
 
             </div>
 
         </div>
 
-    </div>
+    </main>
 
-
-    <!-- =========================
-         BOTTOM NAVIGATION
-    ========================== -->
-
-    <div class="bottom-nav">
+    <nav class="bottom-nav">
 
         <a
-            href="/greenhouse-gases/1"
+            href="/greenhouse-gases/{{ greenhouse_gas.id }}"
             class="nav-item active"
+            aria-label="Лента"
         >
             <span>⌂</span>
-            <span>Газ</span>
+            <span>Лента</span>
         </a>
-
 
         <a
             href="/greenhouse-gases/request"
             class="nav-item"
+            aria-label="Заявка"
         >
             <span>+</span>
             <span>Заявка</span>
         </a>
 
-
         <a
             href="/greenhouse-gases/catalog"
             class="nav-item"
+            aria-label="Каталог"
         >
             <span>▦</span>
             <span>Каталог</span>
         </a>
 
-    </div>
+    </nav>
 
 </div>
 

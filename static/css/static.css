@@ -12,20 +12,46 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
 }
+
+/* =========================
+   PHONE FRAME
+   ========================= */
 
 .phone-screen {
     width: 390px;
-    min-height: 844px;
+    height: 844px;
     margin: 0 auto;
+    background: #ffffff;
     position: relative;
     overflow: hidden;
-    background: #ffffff;
+
+    display: flex;
+    flex-direction: column;
 }
 
-.light-screen {
+.phone-screen.light-screen {
     background: #f2f6f8;
-    min-height: 844px;
+}
+
+.phone-screen > .page-header {
+    flex: 0 0 auto;
+}
+
+.phone-screen > main {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.phone-screen > main.feed-media {
+    overflow: hidden;
+}
+
+.phone-screen > .bottom-nav {
+    flex: 0 0 64px;
 }
 
 
@@ -34,26 +60,34 @@ a {
    ========================= */
 
 .feed-media {
-    height: 780px;
     position: relative;
-    overflow: hidden;
     background: #3b5469;
 }
 
-.feed-video {
+.feed-media .feed-video,
+.feed-media .feed-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    display: block;
-    object-fit: cover;
 }
 
-.feed-overlay {
-    position: absolute;
-    inset: 0;
+.feed-media .feed-video {
+    display: block;
+    object-fit: cover;
+    margin: 0;
+    z-index: 1;
+}
+
+.feed-media .feed-overlay {
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 28px 22px 30px;
+    padding: 28px 22px 26px;
     color: #ffffff;
     background:
         linear-gradient(
@@ -64,17 +98,34 @@ a {
         );
 }
 
+.feed-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .brand-name {
+    color: #ffffff;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
 }
 
+.feed-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+}
+
 .feed-content {
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 13px;
-    max-width: 100%;
 }
 
 .feed-content h1 {
@@ -86,28 +137,24 @@ a {
 
 
 /* =========================
-   TEMPERATURE / INFO
+   RIGHT INFO PANEL (Wibes-like, right-bottom)
    ========================= */
 
-.temperature {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 700;
-}
-
 .feed-info {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 7px;
-    position: absolute;
-    right: 22px;
-    bottom: 170px;
+    align-items: flex-end;
+    gap: 14px;
     text-align: right;
+    /* приподнимаем блок над кнопкой «Следующий» */
+    padding-bottom: 62px;
 }
 
 .feed-info-item {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 2px;
 }
 
@@ -115,11 +162,13 @@ a {
     color: #ffffff;
     font-size: 14px;
     font-weight: 700;
+    line-height: 1;
 }
 
 .feed-info-label {
     color: rgba(255, 255, 255, 0.75);
     font-size: 9px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -134,9 +183,8 @@ a {
     gap: 6px;
 }
 
-.gas-chip {
+.gas-chips > span {
     padding: 5px 8px;
-    border-radius: 0;
     background: #bdd747;
     color: #3b5469;
     font-size: 11px;
@@ -149,8 +197,8 @@ a {
    ========================= */
 
 .feed-description {
+    position: relative;
     margin: 0;
-    max-width: 72%;
     color: #ffffff;
     font-size: 13px;
     line-height: 1.35;
@@ -162,10 +210,6 @@ a {
     height: 1px;
     opacity: 0;
     pointer-events: none;
-}
-
-.description-content {
-    display: block;
 }
 
 .description-short {
@@ -231,52 +275,38 @@ a {
 
 .like-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 7px;
+    gap: 2px;
     width: fit-content;
     margin: 0;
     padding: 0;
     border: none;
-    border-radius: 0;
     background: transparent;
     color: #ffffff;
-    font-size: 16px;
-    font-weight: 400;
+    font-size: 14px;
+    font-weight: 700;
     cursor: default;
     user-select: none;
-    appearance: none;
-    -webkit-appearance: none;
-    box-shadow: none;
 }
 
-.like-row:hover {
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    color: #ffffff;
-    box-shadow: none;
-    transform: none;
-}
-
+.like-row:hover,
 .like-row:focus,
 .like-row:active {
     border: none;
-    border-radius: 0;
     outline: none;
     background: transparent;
-    box-shadow: none;
+    color: #ffffff;
 }
 
 .heart {
     display: inline-block;
     color: #ffffff;
-    font-size: 25px;
+    font-size: 26px;
     line-height: 1;
 }
 
 .like-count {
-    min-width: 12px;
     color: #ffffff;
     line-height: 1;
 }
@@ -286,12 +316,12 @@ a {
    GREEN BUTTONS
    ========================= */
 
-.primary-button,
-.add-button {
+.primary-button {
+    display: block;
     width: 100%;
     padding: 14px;
     border: 1px solid transparent;
-    border-radius: 0 !important;
+    border-radius: 0;
     background: #00818F;
     color: #ffffff;
     text-align: center;
@@ -305,12 +335,10 @@ a {
         transform 0.2s ease;
 }
 
-.primary-button:hover,
-.add-button:hover {
+.primary-button:hover {
     background: #ffffff;
     color: #00818F;
     border-color: #00818F;
-    border-radius: 0 !important;
     transform: translateY(-1px);
 }
 
@@ -320,12 +348,6 @@ a {
    ========================= */
 
 .bottom-nav {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -333,32 +355,42 @@ a {
     border-top: 1px solid #011837;
 }
 
-.nav-item {
+.bottom-nav .nav-item {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
+    background: transparent;
     color: #34E1F4;
     font-size: 11px;
-    transition:
-        color 0.2s ease,
-        transform 0.2s ease;
+    transition: color 0.15s ease;
 }
 
-.nav-item:first-child span:first-child {
+.bottom-nav .nav-item:first-child span:first-child {
     font-size: 21px;
 }
 
-.nav-item.active {
+.bottom-nav .nav-item:link,
+.bottom-nav .nav-item:visited,
+.bottom-nav .nav-item:focus,
+.bottom-nav .nav-item:active,
+.bottom-nav .nav-item:hover {
+    background: transparent;
     color: #34E1F4;
-    font-weight: 700;
+    outline: none;
 }
 
-.nav-item:hover {
+.bottom-nav .nav-item.active,
+.bottom-nav .nav-item.active:link,
+.bottom-nav .nav-item.active:visited,
+.bottom-nav .nav-item.active:focus,
+.bottom-nav .nav-item.active:hover,
+.bottom-nav .nav-item.active:active {
+    background: transparent;
     color: #ffffff;
-    transform: translateY(-1px);
+    font-weight: 700;
 }
 
 
@@ -404,7 +436,7 @@ a {
    ========================= */
 
 .add-content {
-    padding: 0 22px 84px;
+    padding: 0 22px 24px;
 }
 
 .form-section {
@@ -438,20 +470,15 @@ a {
     gap: 7px;
     overflow: hidden;
     border: 1px solid #ccd7dd;
-    border-radius: 0;
     background: #ffffff;
     color: #5d707c;
     font-size: 12px;
     cursor: pointer;
-    transition:
-        border-color 0.2s ease,
-        transform 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .upload-box:hover {
     border-color: #00818F;
-    border-radius: 0;
-    transform: translateY(-1px);
 }
 
 .request-upload-media {
@@ -499,14 +526,6 @@ a {
     overflow: hidden;
 }
 
-.media-preview {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    border-radius: 0;
-}
-
 
 /* =========================
    FORM FIELDS
@@ -536,8 +555,7 @@ a {
 
 .field-input:focus {
     border-color: #00818F;
-    box-shadow:
-        0 0 0 2px rgba(0, 129, 143, 0.12);
+    box-shadow: 0 0 0 2px rgba(0, 129, 143, 0.12);
 }
 
 .field-textarea {
@@ -547,45 +565,11 @@ a {
 
 
 /* =========================
-   RESULT
-   ========================= */
-
-.result-card {
-    margin-bottom: 20px;
-    padding: 17px;
-    border-radius: 0;
-    background: #011837;
-    color: #ffffff;
-}
-
-.result-label {
-    display: block;
-    margin-bottom: 7px;
-    color: #ffffff;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-}
-
-.result-card strong {
-    color: #ffffff;
-    font-size: 30px;
-}
-
-.result-card p {
-    margin: 10px 0 0;
-    color: #ffffff;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-
-/* =========================
    CATALOG
    ========================= */
 
 .tile-content {
-    padding: 0 18px 84px;
+    padding: 0 18px 24px;
 }
 
 .filter-section {
@@ -600,12 +584,13 @@ a {
 
 .filter-form {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     gap: 8px;
 }
 
 .filter-input-wrapper {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .filter-input-wrapper label {
@@ -617,10 +602,13 @@ a {
     letter-spacing: 1px;
 }
 
+/* Слайдер занимает всю ширину строки */
 .input-with-unit {
+    width: 100%;
     display: flex;
     align-items: center;
-    overflow: hidden;
+    padding: 0 6px;
+    height: 42px;
     border: 1px solid #ccd7dd;
     border-radius: 10px;
     background: #ffffff;
@@ -631,36 +619,23 @@ a {
 
 .input-with-unit:focus-within {
     border-color: #00818F;
-    box-shadow:
-        0 0 0 2px rgba(0, 129, 143, 0.12);
-}
-
-.input-with-unit input {
-    width: 100%;
-    padding: 11px;
-    border: 0;
-    outline: 0;
-    color: #3b5469;
-    font-size: 13px;
+    box-shadow: 0 0 0 2px rgba(0, 129, 143, 0.12);
 }
 
 .input-with-unit input[type="range"] {
-    padding: 8px 10px;
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
 }
-
-.input-with-unit span {
-    padding-right: 10px;
-    color: #5d707c;
-    font-size: 11px;
-}
-
-
-/* Кнопка Фильтр — прямоугольная */
 
 .filter-form button {
-    padding: 11px 13px;
+    flex: 0 0 auto;
+    height: 42px;
+    padding: 0 16px;
     border: 1px solid transparent;
-    border-radius: 0 !important;
     background: #00818F;
     color: #ffffff;
     font-weight: 700;
@@ -668,16 +643,13 @@ a {
     transition:
         background 0.2s ease,
         color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
+        border-color 0.2s ease;
 }
 
 .filter-form button:hover {
     background: #ffffff;
     color: #00818F;
     border-color: #00818F;
-    border-radius: 0 !important;
-    transform: translateY(-1px);
 }
 
 .filter-value {
@@ -699,11 +671,10 @@ a {
 }
 
 .prediction-card {
+    display: block;
     overflow: hidden;
-    border-radius: 0;
     background: #ffffff;
-    box-shadow:
-        0 3px 12px rgba(1, 24, 55, 0.12);
+    box-shadow: 0 3px 12px rgba(1, 24, 55, 0.12);
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -711,8 +682,7 @@ a {
 
 .prediction-card:hover {
     transform: translateY(-2px);
-    box-shadow:
-        0 6px 18px rgba(1, 24, 55, 0.18);
+    box-shadow: 0 6px 18px rgba(1, 24, 55, 0.18);
 }
 
 .prediction-image-wrapper {
@@ -726,18 +696,6 @@ a {
     height: 100%;
     display: block;
     object-fit: cover;
-}
-
-.prediction-temperature {
-    position: absolute;
-    left: 8px;
-    bottom: 8px;
-    padding: 5px 7px;
-    border-radius: 0;
-    background: #00818F;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
 }
 
 .prediction-card-content {
@@ -786,9 +744,7 @@ a {
    ========================= */
 
 @media (max-width: 390px) {
-
     .phone-screen {
         width: 100%;
     }
-
 }

@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Каталог — Greenhouse Gases</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='css/static.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', path='css/static.css') }}">
 </head>
 
 <body>
@@ -21,7 +17,6 @@
             <h1>Каталог</h1>
         </div>
     </header>
-
 
     <main class="tile-content">
 
@@ -42,7 +37,6 @@
                     </label>
 
                     <div class="input-with-unit">
-
                         <input
                             id="concentration"
                             type="range"
@@ -52,27 +46,19 @@
                             step="0.01"
                             value="{{ concentration_filter }}"
                         >
-
-                        <span>ppm</span>
-
                     </div>
 
                     <div class="filter-value">
-                        Значение:
-                        {{ concentration_filter }}
-                        ppm
+                        Значение: {{ concentration_filter }} ppm
                     </div>
 
                 </div>
 
-                <button type="submit">
-                    Фильтр
-                </button>
+                <button type="submit">Фильтр</button>
 
             </form>
 
         </section>
-
 
         <section class="tile-grid">
 
@@ -84,21 +70,16 @@
             >
 
                 <div class="prediction-image-wrapper">
-
                     <img
                         class="prediction-image"
                         src="{{ greenhouse_gas.image_url }}"
                         alt="{{ greenhouse_gas.name }}"
                     >
-
                 </div>
-
 
                 <div class="prediction-card-content">
 
-                    <h3>
-                        {{ greenhouse_gas.name }}
-                    </h3>
+                    <h3>{{ greenhouse_gas.name }}</h3>
 
                     <div class="prediction-concentration">
                         {{ greenhouse_gas.concentration_ppm }} ppm
@@ -106,9 +87,7 @@
 
                     <div class="prediction-likes">
                         <span>♡</span>
-                        <span>
-                            {{ greenhouse_gas.likes_count }}
-                        </span>
+                        <span>{{ greenhouse_gas.likes_count }}</span>
                     </div>
 
                 </div>
@@ -127,34 +106,24 @@
 
     </main>
 
+    <nav class="bottom-nav">
 
-    <div class="bottom-nav">
-
-        <a
-            href="/greenhouse-gases/1"
-            class="nav-item"
-        >
+        <a href="/greenhouse-gases/1" class="nav-item">
             <span>⌂</span>
             <span>Газ</span>
         </a>
 
-        <a
-            href="/greenhouse-gases/request"
-            class="nav-item"
-        >
+        <a href="/greenhouse-gases/request" class="nav-item">
             <span>+</span>
             <span>Заявка</span>
         </a>
 
-        <a
-            href="/greenhouse-gases/catalog"
-            class="nav-item active"
-        >
+        <a href="/greenhouse-gases/catalog" class="nav-item active">
             <span>▦</span>
             <span>Каталог</span>
         </a>
 
-    </div>
+    </nav>
 
 </div>
 

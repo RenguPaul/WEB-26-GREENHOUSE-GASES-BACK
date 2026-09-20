@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заявка — Greenhouse Gases</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='css/static.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', path='css/static.css') }}">
 </head>
 
 <body>
@@ -18,19 +14,11 @@
     <header class="page-header">
 
         <div>
-            <div class="page-label">
-                GREENHOUSE GASES
-            </div>
-
+            <div class="page-label">GREENHOUSE GASES</div>
             <h1>Заявка</h1>
         </div>
 
-        <div class="status-badge">
-            draft
-        </div>
-
     </header>
-
 
     <main class="add-content">
 
@@ -49,25 +37,13 @@
                     >
 
                     <div class="upload-overlay">
-
-                        <span class="upload-icon">
-                            ▣
-                        </span>
-
-                        <span class="upload-text">
-                            Добавить изображение
-                        </span>
-
+                        <span class="upload-icon">▣</span>
+                        <span class="upload-text">Добавить изображение</span>
                     </div>
 
-                    <input
-                        class="file-input"
-                        type="file"
-                        accept="image/*"
-                    >
+                    <input class="file-input" type="file" accept="image/*">
 
                 </label>
-
 
                 <label class="upload-box">
 
@@ -79,31 +55,15 @@
                         playsinline
                         poster="{{ greenhouse_gas.image_url }}"
                     >
-
-                        <source
-                            src="{{ greenhouse_gas.video_url }}"
-                            type="video/mp4"
-                        >
-
+                        <source src="{{ greenhouse_gas.video_url }}" type="video/mp4">
                     </video>
 
                     <div class="upload-overlay">
-
-                        <span class="upload-icon">
-                            ▶
-                        </span>
-
-                        <span class="upload-text">
-                            Добавить видео
-                        </span>
-
+                        <span class="upload-icon">▶</span>
+                        <span class="upload-text">Добавить видео</span>
                     </div>
 
-                    <input
-                        class="file-input"
-                        type="file"
-                        accept="video/*"
-                    >
+                    <input class="file-input" type="file" accept="video/*">
 
                 </label>
 
@@ -111,19 +71,11 @@
 
         </section>
 
-
         <section class="form-section">
 
             <h2>Данные для расчёта</h2>
 
-
-            <label
-                class="field-label"
-                for="name"
-            >
-                Название
-            </label>
-
+            <label class="field-label" for="name">Название</label>
             <input
                 class="field-input"
                 id="name"
@@ -131,14 +83,7 @@
                 value="{{ greenhouse_gas.name }}"
             >
 
-
-            <label
-                class="field-label"
-                for="formula"
-            >
-                Формула
-            </label>
-
+            <label class="field-label" for="formula">Формула</label>
             <input
                 class="field-input"
                 id="formula"
@@ -146,21 +91,9 @@
                 value="{{ greenhouse_gas.formula }}"
             >
 
+            <form method="get" action="/greenhouse-gases/request">
 
-            <!--
-                Концентрация отправляется на сервер
-                через GET-запрос.
-            -->
-
-            <form
-                method="get"
-                action="/greenhouse-gases/request"
-            >
-
-                <label
-                    class="field-label"
-                    for="concentration"
-                >
+                <label class="field-label" for="concentration">
                     Концентрация, ppm
                 </label>
 
@@ -175,25 +108,9 @@
                     required
                 >
 
-
-                <button
-                    class="add-button"
-                    type="submit"
-                    style="margin-top: 12px;"
-                >
-                    Рассчитать
-                </button>
-
             </form>
 
-
-            <label
-                class="field-label"
-                for="gwp"
-            >
-                GWP100
-            </label>
-
+            <label class="field-label" for="gwp">GWP100</label>
             <input
                 class="field-input"
                 id="gwp"
@@ -202,14 +119,7 @@
                 step="0.01"
             >
 
-
-            <label
-                class="field-label"
-                for="description"
-            >
-                Описание
-            </label>
-
+            <label class="field-label" for="description">Описание</label>
             <textarea
                 class="field-input field-textarea"
                 id="description"
@@ -218,71 +128,26 @@
 
         </section>
 
-
-        {% if greenhouse_gas.temperature_change is not none %}
-
-        <section class="form-section">
-
-            <div class="result-card">
-
-                <span class="result-label">
-                    РЕЗУЛЬТАТ РАСЧЁТА
-                </span>
-
-
-                <strong>
-                    {% if greenhouse_gas.temperature_change > 0 %}
-                        +{{ greenhouse_gas.temperature_change }} °C
-                    {% else %}
-                        {{ greenhouse_gas.temperature_change }} °C
-                    {% endif %}
-                </strong>
-
-
-                <p>
-                    Изменение средней температуры
-                    относительно базовой концентрации
-                    CO₂ — 280 ppm.
-                </p>
-
-            </div>
-
-        </section>
-
-        {% endif %}
-
     </main>
 
+    <nav class="bottom-nav">
 
-    <div class="bottom-nav">
-
-        <a
-            href="/greenhouse-gases/1"
-            class="nav-item"
-        >
+        <a href="/greenhouse-gases/1" class="nav-item">
             <span>⌂</span>
             <span>Газ</span>
         </a>
 
-
-        <a
-            href="/greenhouse-gases/request"
-            class="nav-item active"
-        >
+        <a href="/greenhouse-gases/request" class="nav-item active">
             <span>+</span>
             <span>Заявка</span>
         </a>
 
-
-        <a
-            href="/greenhouse-gases/catalog"
-            class="nav-item"
-        >
+        <a href="/greenhouse-gases/catalog" class="nav-item">
             <span>▦</span>
             <span>Каталог</span>
         </a>
 
-    </div>
+    </nav>
 
 </div>
 
