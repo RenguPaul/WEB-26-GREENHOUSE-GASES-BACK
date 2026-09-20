@@ -90,10 +90,7 @@ def serialize_greenhouse_gas(
     }
 
 
-# =========================================================
 # POST: УДАЛЕНИЕ
-# =========================================================
-
 @router.post(
     "/greenhouse-gases/{greenhouse_gas_id}/delete",
 )
@@ -114,10 +111,7 @@ async def delete_greenhouse_gas_request(
     )
 
 
-# =========================================================
 # GET: СТРАНИЦА СОЗДАНИЯ / ПУБЛИКАЦИИ
-# =========================================================
-
 @router.get(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
@@ -159,10 +153,7 @@ async def get_greenhouse_gas_request(
     )
 
 
-# =========================================================
 # POST: СОЗДАНИЕ ЧЕРНОВИКА
-# =========================================================
-
 @router.post(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
@@ -193,12 +184,25 @@ async def create_greenhouse_gas_request(
                 existing_draft
             )
 
+            published = await get_published_greenhouse_gases(
+                session=session,
+            )
+
+            first_greenhouse_gas_id = (
+                published[0].id
+                if published
+                else None
+            )
+
             return templates.TemplateResponse(
                 request=request,
                 name="greenhouse_gas_request.html",
                 context={
                     "request": request,
                     "greenhouse_gas": greenhouse_gas,
+                    "first_greenhouse_gas_id": (
+                        first_greenhouse_gas_id
+                    ),
                 },
             )
 
@@ -208,8 +212,18 @@ async def create_greenhouse_gas_request(
             creator_id=CURRENT_USER_ID,
         )
 
+        published = await get_published_greenhouse_gases(
+            session=session,
+        )
+
     greenhouse_gas = serialize_greenhouse_gas(
         draft
+    )
+
+    first_greenhouse_gas_id = (
+        published[0].id
+        if published
+        else None
     )
 
     return templates.TemplateResponse(
@@ -218,14 +232,14 @@ async def create_greenhouse_gas_request(
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
+            "first_greenhouse_gas_id": (
+                first_greenhouse_gas_id
+            ),
         },
     )
 
 
-# =========================================================
 # POST: ПУБЛИКАЦИЯ
-# =========================================================
-
 @router.post(
     "/greenhouse-gases/publish",
     response_class=HTMLResponse,
@@ -237,10 +251,6 @@ async def publish_greenhouse_gas_request(
 
     short_description = str(
         form.get("short_description", "")
-    ).strip()
-
-    formula = str(
-        form.get("formula", "")
     ).strip()
 
     global_warming_potential_raw = form.get(
@@ -255,12 +265,6 @@ async def publish_greenhouse_gas_request(
         raise HTTPException(
             status_code=400,
             detail="Описание парникового газа не указано",
-        )
-
-    if not formula:
-        raise HTTPException(
-            status_code=400,
-            detail="Формула парникового газа не указана",
         )
 
     if (
@@ -333,7 +337,6 @@ async def publish_greenhouse_gas_request(
             session=session,
             greenhouse_gas_id=draft.id,
             short_description=short_description,
-            formula=formula,
             global_warming_potential_100y=(
                 global_warming_potential
             ),
@@ -361,10 +364,7 @@ async def publish_greenhouse_gas_request(
     )
 
 
-# =========================================================
 # GET: КАТАЛОГ
-# =========================================================
-
 @router.get(
     "/greenhouse-gases/catalog",
     response_class=HTMLResponse,
@@ -427,10 +427,7 @@ async def get_greenhouse_gas_catalog(
     )
 
 
-# =========================================================
 # GET: ЛЕНТА / КОНКРЕТНЫЙ ГАЗ
-# =========================================================
-
 @router.get(
     "/greenhouse-gases/{greenhouse_gas_id}",
     response_class=HTMLResponse,
@@ -480,6 +477,7 @@ async def get_greenhouse_gas(
             next_index = 0
 
         greenhouse_gas = published[next_index]
+
     else:
         greenhouse_gas = published[current_index]
 

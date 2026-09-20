@@ -13,7 +13,9 @@ async def get_published_greenhouse_gases(
 ) -> list[GreenhouseGas]:
     query = (
         select(GreenhouseGas)
-        .where(GreenhouseGas.status == "опубликован")
+        .where(
+            GreenhouseGas.status == "опубликован"
+        )
         .order_by(GreenhouseGas.id)
     )
 
@@ -83,7 +85,6 @@ async def publish_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
     short_description: str,
-    formula: str,
     global_warming_potential_100y: float,
     concentration_ppm: float,
     temperature_change_c: float,
@@ -102,13 +103,21 @@ async def publish_greenhouse_gas(
         return None
 
     greenhouse_gas.short_description = short_description
-    greenhouse_gas.formula = formula
+
     greenhouse_gas.global_warming_potential_100y = (
         global_warming_potential_100y
     )
-    greenhouse_gas.concentration_ppm = concentration_ppm
-    greenhouse_gas.temperature_change_c = temperature_change_c
+
+    greenhouse_gas.concentration_ppm = (
+        concentration_ppm
+    )
+
+    greenhouse_gas.temperature_change_c = (
+        temperature_change_c
+    )
+
     greenhouse_gas.status = "опубликован"
+
     greenhouse_gas.published_at = datetime.utcnow()
 
     await session.commit()

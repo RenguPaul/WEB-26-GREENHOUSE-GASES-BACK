@@ -50,9 +50,11 @@
 
                 <div class="gas-chips">
 
+                    {% if greenhouse_gas.formula %}
                     <span>
                         {{ greenhouse_gas.formula }}
                     </span>
+                    {% endif %}
 
                 </div>
 
@@ -67,11 +69,11 @@
                     <div class="description-content">
 
                         <div class="description-short">
-                            {{ greenhouse_gas.short_description }}
+                            {{ greenhouse_gas.short_description or 'Описание отсутствует.' }}
                         </div>
 
                         <div class="description-full">
-                            {{ greenhouse_gas.short_description }}
+                            {{ greenhouse_gas.short_description or 'Описание отсутствует.' }}
                         </div>
 
                         <label
@@ -106,7 +108,7 @@
                 <div class="feed-info-item">
 
                     <div class="feed-info-value">
-                        {{ greenhouse_gas.concentration_ppm }}
+                        {{ greenhouse_gas.concentration_ppm or '—' }}
                     </div>
 
                     <div class="feed-info-label">
@@ -118,7 +120,7 @@
                 <div class="feed-info-item">
 
                     <div class="feed-info-value">
-                        {{ greenhouse_gas.global_warming_potential_100y }}
+                        {{ greenhouse_gas.global_warming_potential_100y or '—' }}
                     </div>
 
                     <div class="feed-info-label">
@@ -130,10 +132,14 @@
                 <div class="feed-info-item">
 
                     <div class="feed-info-value">
-                        {% if greenhouse_gas.temperature_change_c > 0 %}
-                            +{{ greenhouse_gas.temperature_change_c }}
+                        {% if greenhouse_gas.temperature_change_c is not none %}
+                            {% if greenhouse_gas.temperature_change_c > 0 %}
+                                +{{ greenhouse_gas.temperature_change_c }}
+                            {% else %}
+                                {{ greenhouse_gas.temperature_change_c }}
+                            {% endif %}
                         {% else %}
-                            {{ greenhouse_gas.temperature_change_c }}
+                            —
                         {% endif %}
                     </div>
 

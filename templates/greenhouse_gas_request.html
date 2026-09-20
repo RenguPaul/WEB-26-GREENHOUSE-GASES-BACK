@@ -53,6 +53,7 @@
 
     <main class="add-content">
 
+        <!-- МЕДИАФАЙЛЫ -->
         <section class="form-section">
 
             <h2>
@@ -61,20 +62,25 @@
 
             <div class="upload-grid">
 
+                <!-- ФОТО -->
                 <label class="upload-box">
 
                     {% if greenhouse_gas and greenhouse_gas.image_url %}
+
                         <img
                             class="request-upload-media"
                             src="{{ greenhouse_gas.image_url }}"
                             alt="Фото парникового газа"
                         >
+
                     {% else %}
+
                         <img
                             class="request-upload-media"
                             src="{{ url_for('static', path='media/default-greenhouse.svg') }}"
                             alt="Фото парникового газа"
                         >
+
                     {% endif %}
 
                     <div class="upload-overlay">
@@ -89,6 +95,11 @@
 
                     </div>
 
+                    <!--
+                        У input нет name.
+                        Поэтому файл не отправляется на сервер
+                        и не сохраняется в БД.
+                    -->
                     <input
                         type="file"
                         class="file-input"
@@ -98,9 +109,11 @@
                 </label>
 
 
+                <!-- ВИДЕО -->
                 <label class="upload-box">
 
                     {% if greenhouse_gas and greenhouse_gas.video_url %}
+
                         <video
                             class="request-upload-media"
                             autoplay
@@ -113,7 +126,9 @@
                                 type="video/mp4"
                             >
                         </video>
+
                     {% else %}
+
                         <video
                             class="request-upload-media"
                             autoplay
@@ -126,6 +141,7 @@
                                 type="video/mp4"
                             >
                         </video>
+
                     {% endif %}
 
                     <div class="upload-overlay">
@@ -140,6 +156,11 @@
 
                     </div>
 
+                    <!--
+                        У input нет name.
+                        Поэтому файл не отправляется на сервер
+                        и не сохраняется в БД.
+                    -->
                     <input
                         type="file"
                         class="file-input"
@@ -155,6 +176,7 @@
 
         {% if not greenhouse_gas %}
 
+        <!-- СОЗДАНИЕ ЧЕРНОВИКА -->
         <section class="form-section">
 
             <h2>
@@ -193,8 +215,10 @@
 
         </section>
 
+
         {% else %}
 
+        <!-- ПУБЛИКАЦИЯ ЧЕРНОВИКА -->
         <section class="form-section">
 
             <h2>
@@ -226,7 +250,7 @@
                     class="field-label"
                     for="short_description"
                 >
-                    Краткое описание
+                    Краткая информация
                 </label>
 
                 <textarea
@@ -240,18 +264,20 @@
 
                 <label
                     class="field-label"
-                    for="formula"
+                    for="concentration"
                 >
-                    Химическая формула
+                    Концентрация парникового газа, ppm
                 </label>
 
                 <input
-                    id="formula"
-                    name="formula"
-                    type="text"
+                    id="concentration"
+                    name="concentration"
+                    type="number"
+                    step="0.01"
+                    min="0"
                     class="field-input"
-                    value="{{ greenhouse_gas.formula or '' }}"
-                    placeholder="Например, CO₂"
+                    value="{{ greenhouse_gas.concentration_ppm or '' }}"
+                    placeholder="Например, 420"
                     required
                 >
 
@@ -276,26 +302,6 @@
                 >
 
 
-                <label
-                    class="field-label"
-                    for="concentration"
-                >
-                    Концентрация
-                </label>
-
-                <input
-                    id="concentration"
-                    name="concentration"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    class="field-input"
-                    value="{{ greenhouse_gas.concentration_ppm or '' }}"
-                    placeholder="ppm"
-                    required
-                >
-
-
                 {% if greenhouse_gas.temperature_change_c is not none %}
 
                 <div class="result-card">
@@ -305,17 +311,20 @@
                     </span>
 
                     <strong>
+
                         {% if greenhouse_gas.temperature_change_c > 0 %}
                             +{{ greenhouse_gas.temperature_change_c }}
                         {% else %}
                             {{ greenhouse_gas.temperature_change_c }}
                         {% endif %}
+
                         °C
+
                     </strong>
 
                     <p>
-                        Расчёт выполнен на основе концентрации
-                        парникового газа.
+                        Расчёт выполнен автоматически
+                        на основе концентрации парникового газа.
                     </p>
 
                 </div>
@@ -339,30 +348,48 @@
     </main>
 
 
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
     <nav class="bottom-nav">
 
         <a
             href="{% if first_greenhouse_gas_id %}/greenhouse-gases/{{ first_greenhouse_gas_id }}{% else %}/greenhouse-gases/catalog{% endif %}"
             class="nav-item"
         >
-            <span class="nav-icon">⌂</span>
-            <span class="nav-label">Лента</span>
+            <span class="nav-icon">
+                ⌂
+            </span>
+
+            <span class="nav-label">
+                Лента
+            </span>
         </a>
+
 
         <a
             href="/greenhouse-gases/request"
             class="nav-item active"
         >
-            <span class="nav-icon">+</span>
-            <span class="nav-label">Заявка</span>
+            <span class="nav-icon">
+                +
+            </span>
+
+            <span class="nav-label">
+                Заявка
+            </span>
         </a>
+
 
         <a
             href="/greenhouse-gases/catalog"
             class="nav-item"
         >
-            <span class="nav-icon">▦</span>
-            <span class="nav-label">Каталог</span>
+            <span class="nav-icon">
+                ▦
+            </span>
+
+            <span class="nav-label">
+                Каталог
+            </span>
         </a>
 
     </nav>
