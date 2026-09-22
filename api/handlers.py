@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 
 CURRENT_USER_ID = 1
 
-DEFAULT_IMAGE_URL = "/static/media/default-greenhouse.svg"
+DEFAULT_IMAGE_URL = "/static/media/default-greenhouse.jpg"
 DEFAULT_VIDEO_URL = "/static/media/default-greenhouse.mp4"
 
 REFERENCE_CO2_PPM = 280.0

@@ -1,218 +1,216 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Каталог — Greenhouse Gases</title>
+<title>Каталог — Greenhouse Gases</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='css/static.css') }}"
-    >
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', path='css/static.css') }}"
+>
+
 </head>
 
 <body>
 
 <div class="phone-screen light-screen">
 
-    <header class="page-header">
+<header class="page-header">
 
-        <div class="page-header-content">
+    <div class="page-header-content">
 
-            <div class="page-label">
-                GREENHOUSE GASES
-            </div>
-
-            <h1>
-                Каталог
-            </h1>
-
+        <div class="page-label">
+            GREENHOUSE GASES
         </div>
 
-    </header>
+        <h1>
+            Каталог
+        </h1>
+
+    </div>
+
+</header>
 
 
-    <main class="tile-content">
+<main class="tile-content">
 
-        <section class="filter-section">
+    <section class="filter-section">
 
-            <h2>
-                Фильтр по концентрации
-            </h2>
+        <h2>
+            Фильтр по концентрации
+        </h2>
 
-            <form
-                class="filter-form"
-                method="get"
-                action="/greenhouse-gases/catalog"
-            >
+        <form
+            class="filter-form"
+            method="get"
+            action="/greenhouse-gases/catalog"
+        >
 
-                <div class="filter-input-wrapper">
+            <div class="filter-input-wrapper">
 
-                    <label for="concentration">
-                        Максимальная концентрация
-                    </label>
+                <label for="concentration">
+                    Максимальная концентрация
+                </label>
 
-                    <div class="filter-row">
+                <div class="filter-row">
 
-                        <div class="input-with-unit">
+                    <div class="input-with-unit">
 
-                            <input
-                                id="concentration"
-                                type="range"
-                                name="concentration"
-                                min="0"
-                                max="10000"
-                                step="0.01"
-                                value="{{ concentration_filter if concentration_filter is not none else 10000 }}"
-                            >
+                        <input
+                            id="concentration"
+                            type="range"
+                            name="concentration"
+                            min="0"
+                            max="10000"
+                            step="0.01"
+                            value="{{ concentration_filter if concentration_filter is not none else 10000 }}"
+                        >
 
-                            <span>
-                                ppm
-                            </span>
-
-                        </div>
-
-                        <button type="submit">
-                            Фильтр
-                        </button>
+                        <span>
+                            ppm
+                        </span>
 
                     </div>
 
-                    <div class="filter-value">
-                        Значение:
-                        {{ concentration_filter if concentration_filter is not none else 10000 }}
+                    <button type="submit">
+                        Фильтр
+                    </button>
+
+                </div>
+
+                <div class="filter-value">
+                    Значение:
+                    {{ concentration_filter if concentration_filter is not none else 10000 }}
+                    ppm
+                </div>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <section class="tile-grid">
+
+        {% for greenhouse_gas in greenhouse_gases %}
+
+        <div class="prediction-card-container">
+
+            <a
+                href="/greenhouse-gases/{{ greenhouse_gas.id }}"
+                class="prediction-card"
+            >
+
+                <div class="prediction-image-wrapper">
+
+                    <img
+                        class="prediction-image"
+                        src="{{ greenhouse_gas.image_url }}"
+                        alt="{{ greenhouse_gas.name }}"
+                    >
+
+                </div>
+
+
+                <div class="prediction-card-content">
+
+                    <h3>
+                        {{ greenhouse_gas.name }}
+                    </h3>
+
+                    <div class="prediction-concentration">
+                        {{ greenhouse_gas.concentration_ppm }}
                         ppm
+                    </div>
+
+                    <div class="prediction-gwp">
+                        GWP100:
+                        {{ greenhouse_gas.global_warming_potential_100y }}
+                    </div>
+
+                    <div class="prediction-likes">
+
+                        <span class="like-icon">
+                            ♡
+                        </span>
+
+                        <span>
+                            {{ greenhouse_gas.likes_count }}
+                        </span>
+
                     </div>
 
                 </div>
 
+            </a>
+
+
+            <form
+                method="post"
+                action="/greenhouse-gases/{{ greenhouse_gas.id }}/delete"
+            >
+
+                <button
+                    type="submit"
+                    class="delete-button"
+                >
+                    Удалить
+                </button>
+
             </form>
 
-        </section>
+        </div>
+
+        {% else %}
+
+        <div class="empty-catalog">
+            По заданной концентрации
+            парниковые газы не найдены.
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</main>
 
 
-        <section class="tile-grid">
+<nav class="bottom-nav">
 
-            {% for greenhouse_gas in greenhouse_gases %}
+    <a
+        href="{% if first_greenhouse_gas_id %}/greenhouse-gases/{{ first_greenhouse_gas_id }}{% else %}/greenhouse-gases/catalog{% endif %}"
+        class="nav-item"
+    >
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label">Лента</span>
+    </a>
 
-            <div class="prediction-card-container">
+    <a
+        href="/greenhouse-gases/request"
+        class="nav-item"
+    >
+        <span class="nav-icon">+</span>
+        <span class="nav-label">Заявка</span>
+    </a>
 
-                <a
-                    href="/greenhouse-gases/{{ greenhouse_gas.id }}"
-                    class="prediction-card"
-                >
+    <a
+        href="/greenhouse-gases/catalog"
+        class="nav-item active"
+    >
+        <span class="nav-icon">▦</span>
+        <span class="nav-label">Каталог</span>
+    </a>
 
-                    <div class="prediction-image-wrapper">
-
-                        <img
-                            class="prediction-image"
-                            src="{{ greenhouse_gas.image_url }}"
-                            alt="{{ greenhouse_gas.name }}"
-                        >
-
-                    </div>
-
-
-                    <div class="prediction-card-content">
-
-                        <h3>
-                            {{ greenhouse_gas.name }}
-                        </h3>
-
-                        <div class="prediction-formula">
-                            {{ greenhouse_gas.formula }}
-                        </div>
-
-                        <div class="prediction-concentration">
-                            {{ greenhouse_gas.concentration_ppm }}
-                            ppm
-                        </div>
-
-                        <div class="prediction-gwp">
-                            GWP100:
-                            {{ greenhouse_gas.global_warming_potential_100y }}
-                        </div>
-
-                        <div class="prediction-likes">
-
-                            <span class="like-icon">
-                                ♡
-                            </span>
-
-                            <span>
-                                {{ greenhouse_gas.likes_count }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-
-                <form
-                    method="post"
-                    action="/greenhouse-gases/{{ greenhouse_gas.id }}/delete"
-                >
-
-                    <button
-                        type="submit"
-                        class="delete-button"
-                    >
-                        Удалить
-                    </button>
-
-                </form>
-
-            </div>
-
-            {% else %}
-
-            <div class="empty-catalog">
-                По заданной концентрации
-                парниковые газы не найдены.
-            </div>
-
-            {% endfor %}
-
-        </section>
-
-    </main>
-
-
-    <nav class="bottom-nav">
-
-        <a
-            href="{% if first_greenhouse_gas_id %}/greenhouse-gases/{{ first_greenhouse_gas_id }}{% else %}/greenhouse-gases/catalog{% endif %}"
-            class="nav-item"
-        >
-            <span class="nav-icon">⌂</span>
-            <span class="nav-label">Лента</span>
-        </a>
-
-        <a
-            href="/greenhouse-gases/request"
-            class="nav-item"
-        >
-            <span class="nav-icon">+</span>
-            <span class="nav-label">Заявка</span>
-        </a>
-
-        <a
-            href="/greenhouse-gases/catalog"
-            class="nav-item active"
-        >
-            <span class="nav-icon">▦</span>
-            <span class="nav-label">Каталог</span>
-        </a>
-
-    </nav>
+</nav>
 
 </div>
 
