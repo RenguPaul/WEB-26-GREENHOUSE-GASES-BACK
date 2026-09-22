@@ -30,24 +30,42 @@ CLIMATE_SENSITIVITY_C = 3.0
 
 def calculate_temperature_change(
     concentration_ppm: float,
+    global_warming_potential_100y: float,
 ) -> float:
     """
     Упрощённый расчёт изменения средней температуры
-    относительно базовой концентрации CO₂ = 280 ppm.
+    с учётом концентрации парникового газа и его GWP100.
 
-    ΔT = S * log2(C / C0)
+    Сначала рассчитывается эквивалентная концентрация CO₂:
 
-    S  = 3 °C
-    C0 = 280 ppm
+        C_eff = concentration_ppm * GWP100
+
+    Затем изменение температуры:
+
+        ΔT = S * log2(C_eff / C0)
+
+    где:
+
+        S  = 3.0 °C — чувствительность климата;
+        C0 = 280 ppm — базовая концентрация CO₂.
     """
 
     if concentration_ppm <= 0:
         return 0.0
 
+    if global_warming_potential_100y <= 0:
+        return 0.0
+
+    effective_concentration = (
+        concentration_ppm
+        * global_warming_potential_100y
+    )
+
     return round(
         CLIMATE_SENSITIVITY_C
         * math.log2(
-            concentration_ppm / REFERENCE_CO2_PPM
+            effective_concentration
+            / REFERENCE_CO2_PPM
         ),
         1,
     )
@@ -90,7 +108,10 @@ def serialize_greenhouse_gas(
     }
 
 
+# ============================================================
 # POST: УДАЛЕНИЕ
+# ============================================================
+
 @router.post(
     "/greenhouse-gases/{greenhouse_gas_id}/delete",
 )
@@ -111,7 +132,10 @@ async def delete_greenhouse_gas_request(
     )
 
 
+# ============================================================
 # GET: СТРАНИЦА СОЗДАНИЯ / ПУБЛИКАЦИИ
+# ============================================================
+
 @router.get(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
@@ -153,7 +177,10 @@ async def get_greenhouse_gas_request(
     )
 
 
+# ============================================================
 # POST: СОЗДАНИЕ ЧЕРНОВИКА
+# ============================================================
+
 @router.post(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
@@ -239,7 +266,10 @@ async def create_greenhouse_gas_request(
     )
 
 
+# ============================================================
 # POST: ПУБЛИКАЦИЯ
+# ============================================================
+
 @router.post(
     "/greenhouse-gases/publish",
     response_class=HTMLResponse,
@@ -311,14 +341,25 @@ async def publish_greenhouse_gas_request(
             detail="Концентрация должна быть больше нуля",
         )
 
-    if global_warming_potential < 0:
+    if global_warming_potential <= 0:
         raise HTTPException(
             status_code=400,
-            detail="GWP100 не может быть отрицательным",
+            detail="GWP100 должен быть больше нуля",
         )
 
+    # Расчёт использует оба предметных параметра:
+    #
+    # concentration_ppm
+    # +
+    # global_warming_potential_100y
+    # =
+    # temperature_change_c
+
     temperature_change = calculate_temperature_change(
-        concentration
+        concentration_ppm=concentration,
+        global_warming_potential_100y=(
+            global_warming_potential
+        ),
     )
 
     async with async_session_maker() as session:
@@ -364,7 +405,10 @@ async def publish_greenhouse_gas_request(
     )
 
 
+# ============================================================
 # GET: КАТАЛОГ
+# ============================================================
+
 @router.get(
     "/greenhouse-gases/catalog",
     response_class=HTMLResponse,
@@ -376,6 +420,9 @@ async def get_greenhouse_gas_catalog(
     ),
 ):
     async with async_session_maker() as session:
+        # Получаем все опубликованные записи отдельно,
+        # чтобы ссылка "Лента" всегда вела на существующий
+        # опубликованный объект независимо от фильтра.
         all_published = await get_published_greenhouse_gases(
             session=session,
         )
@@ -427,7 +474,10 @@ async def get_greenhouse_gas_catalog(
     )
 
 
+# ============================================================
 # GET: ЛЕНТА / КОНКРЕТНЫЙ ГАЗ
+# ============================================================
+
 @router.get(
     "/greenhouse-gases/{greenhouse_gas_id}",
     response_class=HTMLResponse,
@@ -477,7 +527,6 @@ async def get_greenhouse_gas(
             next_index = 0
 
         greenhouse_gas = published[next_index]
-
     else:
         greenhouse_gas = published[current_index]
 
@@ -497,3 +546,5 @@ async def get_greenhouse_gas(
             "greenhouse_gas": prepared,
         },
     )
+
+
