@@ -7,79 +7,122 @@ from models.greenhouse_gas import GreenhouseGas
 from models.like import Like
 
 
+# ============================================================
+# ПОЛУЧЕНИЕ ОПУБЛИКОВАННЫХ ПАРНИКОВЫХ ГАЗОВ
+# ============================================================
+
 async def get_published_greenhouse_gases(
     session: AsyncSession,
     concentration: float | None = None,
-) -> list[GreenhouseGas]:
-    query = (
-        select(GreenhouseGas)
-        .where(
-            GreenhouseGas.status == "опубликован"
-        )
-        .order_by(GreenhouseGas.id)
+):
+    """
+    Получение опубликованных парниковых газов
+    через SQLAlchemy ORM.
+
+    Если передана concentration,
+    выполняется серверная фильтрация.
+    """
+
+    stmt = select(GreenhouseGas).where(
+        GreenhouseGas.status == "опубликован"
     )
 
     if concentration is not None:
-        query = query.where(
-            GreenhouseGas.concentration_ppm <= concentration
+        stmt = stmt.where(
+            GreenhouseGas.concentration_ppm
+            <= concentration
         )
 
-    result = await session.execute(query)
+    stmt = stmt.order_by(
+        GreenhouseGas.id
+    )
 
-    return list(result.scalars().all())
+    result = await session.execute(stmt)
 
+    return result.scalars().all()
+
+
+# ============================================================
+# ПОЛУЧЕНИЕ ОДНОГО ОПУБЛИКОВАННОГО ГАЗА
+# ============================================================
 
 async def get_greenhouse_gas_by_id(
     session: AsyncSession,
     greenhouse_gas_id: int,
-) -> GreenhouseGas | None:
-    result = await session.execute(
-        select(GreenhouseGas)
-        .where(
-            GreenhouseGas.id == greenhouse_gas_id,
-            GreenhouseGas.status == "опубликован",
-        )
+):
+    """
+    Получение одного опубликованного
+    парникового газа по ID через ORM.
+    """
+
+    stmt = select(GreenhouseGas).where(
+        GreenhouseGas.id == greenhouse_gas_id,
+        GreenhouseGas.status == "опубликован",
     )
+
+    result = await session.execute(stmt)
 
     return result.scalar_one_or_none()
 
 
+# ============================================================
+# ПОЛУЧЕНИЕ ЧЕРНОВИКА ПОЛЬЗОВАТЕЛЯ
+# ============================================================
+
 async def get_draft_greenhouse_gas(
     session: AsyncSession,
     creator_id: int,
-) -> GreenhouseGas | None:
-    result = await session.execute(
-        select(GreenhouseGas)
-        .where(
-            GreenhouseGas.status == "черновик",
-            GreenhouseGas.creator_id == creator_id,
-        )
-        .order_by(GreenhouseGas.id)
+):
+    """
+    Получение черновика конкретного пользователя.
+
+    По требованиям Lab 2 у одного пользователя
+    может быть не более одного черновика.
+    """
+
+    stmt = select(GreenhouseGas).where(
+        GreenhouseGas.creator_id == creator_id,
+        GreenhouseGas.status == "черновик",
     )
 
-    return result.scalars().first()
+    result = await session.execute(stmt)
 
+    return result.scalar_one_or_none()
+
+
+# ============================================================
+# СОЗДАНИЕ ЧЕРНОВИКА
+# ============================================================
 
 async def create_draft_greenhouse_gas(
     session: AsyncSession,
     name: str,
     creator_id: int,
-) -> GreenhouseGas:
-    draft = GreenhouseGas(
+):
+    """
+    Создание черновика через SQLAlchemy ORM.
+    """
+
+    greenhouse_gas = GreenhouseGas(
         name=name,
         status="черновик",
-        image_url=None,
-        video_url=None,
         creator_id=creator_id,
     )
 
-    session.add(draft)
+    session.add(greenhouse_gas)
 
     await session.commit()
-    await session.refresh(draft)
 
-    return draft
+    await session.refresh(
+        greenhouse_gas
+    )
 
+    return greenhouse_gas
+
+
+# ============================================================
+# ПУБЛИКАЦИЯ
+# ============================================================
 
 async def publish_greenhouse_gas(
     session: AsyncSession,
@@ -88,21 +131,31 @@ async def publish_greenhouse_gas(
     global_warming_potential_100y: float,
     concentration_ppm: float,
     temperature_change_c: float,
-) -> GreenhouseGas | None:
-    result = await session.execute(
-        select(GreenhouseGas)
-        .where(
-            GreenhouseGas.id == greenhouse_gas_id,
-            GreenhouseGas.status == "черновик",
-        )
+):
+    """
+    Заполняет черновик и переводит его
+    в статус "опубликован".
+
+    Все изменения выполняются через ORM.
+    """
+
+    stmt = select(GreenhouseGas).where(
+        GreenhouseGas.id == greenhouse_gas_id,
+        GreenhouseGas.status == "черновик",
     )
 
-    greenhouse_gas = result.scalar_one_or_none()
+    result = await session.execute(stmt)
+
+    greenhouse_gas = (
+        result.scalar_one_or_none()
+    )
 
     if greenhouse_gas is None:
         return None
 
-    greenhouse_gas.short_description = short_description
+    greenhouse_gas.short_description = (
+        short_description
+    )
 
     greenhouse_gas.global_warming_potential_100y = (
         global_warming_potential_100y
@@ -118,18 +171,37 @@ async def publish_greenhouse_gas(
 
     greenhouse_gas.status = "опубликован"
 
-    greenhouse_gas.published_at = datetime.utcnow()
+    greenhouse_gas.published_at = (
+        datetime.utcnow()
+    )
 
     await session.commit()
-    await session.refresh(greenhouse_gas)
+
+    await session.refresh(
+        greenhouse_gas
+    )
 
     return greenhouse_gas
 
 
+# ============================================================
+# ЛОГИЧЕСКОЕ УДАЛЕНИЕ
+# ============================================================
+
 async def delete_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
-) -> None:
+):
+    """
+    Логическое удаление.
+
+    ВАЖНО:
+    здесь специально используется raw SQL,
+    потому что это требование лабораторной.
+
+    Физического DELETE нет.
+    """
+
     await session.execute(
         text(
             """
@@ -139,32 +211,52 @@ async def delete_greenhouse_gas(
             """
         ),
         {
-            "greenhouse_gas_id": greenhouse_gas_id,
+            "greenhouse_gas_id":
+                greenhouse_gas_id
         },
     )
 
     await session.commit()
 
 
+# ============================================================
+# КОЛИЧЕСТВО ЛАЙКОВ
+# ============================================================
+
 async def get_likes_counts(
     session: AsyncSession,
     greenhouse_gas_ids: list[int],
-) -> dict[int, int]:
+):
+    """
+    Получает количество лайков для списка
+    парниковых газов.
+
+    Лайки не изменяются.
+    Только читается их количество.
+    """
+
     if not greenhouse_gas_ids:
         return {}
 
-    result = await session.execute(
+    stmt = (
         select(
             Like.greenhouse_gas_id,
             func.count(Like.user_id),
         )
         .where(
-            Like.greenhouse_gas_id.in_(greenhouse_gas_ids)
+            Like.greenhouse_gas_id.in_(
+                greenhouse_gas_ids
+            )
         )
-        .group_by(Like.greenhouse_gas_id)
+        .group_by(
+            Like.greenhouse_gas_id
+        )
     )
 
+    result = await session.execute(stmt)
+
     return {
-        greenhouse_gas_id: likes_count
-        for greenhouse_gas_id, likes_count in result.all()
+        row[0]: row[1]
+        for row in result.all()
     }
+
