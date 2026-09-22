@@ -10,6 +10,7 @@ from data.collections import greenhouse_gases
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+
 MINIO_URL = "http://localhost:9000/climate-media"
 
 REFERENCE_CO2_PPM = 280.0
@@ -24,37 +25,62 @@ def get_published_greenhouse_gases():
     ]
 
 
-def calculate_temperature_change(concentration_ppm: float):
+def calculate_temperature_change(
+    concentration_ppm: float,
+    global_warming_potential_100y: float,
+) -> float:
     """
     Упрощённый расчёт изменения средней температуры
-    относительно доиндустриальной концентрации CO2 = 280 ppm.
+    с учётом концентрации парникового газа и его GWP100.
 
-    ΔT = S * log2(C / C0)
+    Сначала рассчитывается эквивалентная концентрация CO₂:
 
-    S  = 3 °C — чувствительность климата
-    C0 = 280 ppm — базовая концентрация CO2
+        C_eff = concentration_ppm * GWP100
+
+    Затем изменение температуры:
+
+        ΔT = S * log2(C_eff / C0)
+
+    где:
+
+        S  = 3.0 °C — чувствительность климата;
+        C0 = 280 ppm — базовая концентрация CO₂.
     """
 
     if concentration_ppm <= 0:
         return 0.0
 
+    if global_warming_potential_100y <= 0:
+        return 0.0
+
+    effective_concentration = (
+        concentration_ppm
+        * global_warming_potential_100y
+    )
+
     return round(
         CLIMATE_SENSITIVITY_C
-        * math.log2(concentration_ppm / REFERENCE_CO2_PPM),
+        * math.log2(
+            effective_concentration
+            / REFERENCE_CO2_PPM
+        ),
         1,
     )
 
 
-def prepare_greenhouse_gas(greenhouse_gas):
+def prepare_greenhouse_gas(
+    greenhouse_gas,
+):
     """
-    Подготавливает данные парникового газа для шаблонов.
-
-    Температура здесь НЕ рассчитывается.
+    Подготавливает данные парникового газа
+    для передачи в шаблоны.
     """
 
     prepared = greenhouse_gas.copy()
 
-    prepared["likes_count"] = len(greenhouse_gas["likes"])
+    prepared["likes_count"] = len(
+        greenhouse_gas["likes"]
+    )
 
     prepared["image_url"] = (
         f"{MINIO_URL}/{greenhouse_gas['image_key']}"
@@ -67,20 +93,30 @@ def prepare_greenhouse_gas(greenhouse_gas):
     return prepared
 
 
+# ============================================================
+# GET: СТРАНИЦА ЗАЯВКИ
+# ============================================================
+
 @router.get(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
 )
 def get_greenhouse_gas_request(
     request: Request,
-    concentration: float | None = Query(default=None),
+    concentration: float | None = Query(
+        default=None
+    ),
+    gwp: float | None = Query(
+        default=None
+    ),
 ):
     """
-    Страница создания заявки на расчёт.
+    Страница создания заявки.
 
-    Концентрация передаётся через GET-параметр.
-    Например:
-    /greenhouse-gases/request?concentration=420
+    Расчёт выполняется по двум параметрам:
+
+    - concentration — концентрация газа, ppm;
+    - gwp — потенциал глобального потепления GWP100.
     """
 
     draft = next(
@@ -98,26 +134,38 @@ def get_greenhouse_gas_request(
             detail="Черновик парникового газа не найден",
         )
 
-    greenhouse_gas = prepare_greenhouse_gas(draft)
-
-    # Если пользователь ещё ничего не вводил,
-    # показываем исходную концентрацию из черновика.
     if concentration is None:
-        concentration_value = draft["concentration_ppm"]
+        concentration_value = draft[
+            "concentration_ppm"
+        ]
     else:
         concentration_value = concentration
 
-    greenhouse_gas["concentration_ppm"] = concentration_value
-
-    # Температура рассчитывается только для CO2.
-    if draft["formula"] == "CO2":
-        greenhouse_gas["temperature_change"] = (
-            calculate_temperature_change(
-                concentration_value
-            )
-        )
+    if gwp is None:
+        gwp_value = draft[
+            "global_warming_potential_100y"
+        ]
     else:
-        greenhouse_gas["temperature_change"] = None
+        gwp_value = gwp
+
+    greenhouse_gas = prepare_greenhouse_gas(
+        draft
+    )
+
+    greenhouse_gas["concentration_ppm"] = (
+        concentration_value
+    )
+
+    greenhouse_gas[
+        "global_warming_potential_100y"
+    ] = gwp_value
+
+    greenhouse_gas["temperature_change"] = (
+        calculate_temperature_change(
+            concentration_ppm=concentration_value,
+            global_warming_potential_100y=gwp_value,
+        )
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -126,9 +174,14 @@ def get_greenhouse_gas_request(
             "request": request,
             "greenhouse_gas": greenhouse_gas,
             "concentration": concentration_value,
+            "gwp": gwp_value,
         },
     )
 
+
+# ============================================================
+# GET: КАТАЛОГ
+# ============================================================
 
 @router.get(
     "/greenhouse-gases/catalog",
@@ -136,12 +189,14 @@ def get_greenhouse_gas_request(
 )
 def get_greenhouse_gas_catalog(
     request: Request,
-    concentration: float | None = Query(default=None),
+    concentration: float | None = Query(
+        default=None
+    ),
 ):
     """
     Каталог опубликованных парниковых газов.
 
-    Фильтр выполняется на сервере по концентрации.
+    Фильтрация выполняется по концентрации.
     """
 
     published = get_published_greenhouse_gases()
@@ -150,13 +205,35 @@ def get_greenhouse_gas_catalog(
         published = [
             greenhouse_gas
             for greenhouse_gas in published
-            if greenhouse_gas["concentration_ppm"] <= concentration
+            if greenhouse_gas["concentration_ppm"]
+            <= concentration
         ]
 
-    prepared = [
-        prepare_greenhouse_gas(greenhouse_gas)
-        for greenhouse_gas in published
-    ]
+    prepared = []
+
+    for greenhouse_gas in published:
+        item = prepare_greenhouse_gas(
+            greenhouse_gas
+        )
+
+        # Температура рассчитывается из двух
+        # предметных параметров.
+        item["temperature_change"] = (
+            calculate_temperature_change(
+                concentration_ppm=(
+                    greenhouse_gas[
+                        "concentration_ppm"
+                    ]
+                ),
+                global_warming_potential_100y=(
+                    greenhouse_gas[
+                        "global_warming_potential_100y"
+                    ]
+                ),
+            )
+        )
+
+        prepared.append(item)
 
     return templates.TemplateResponse(
         request=request,
@@ -169,10 +246,16 @@ def get_greenhouse_gas_catalog(
                 if concentration is not None
                 else 600
             ),
-            "filter_applied": concentration is not None,
+            "filter_applied": (
+                concentration is not None
+            ),
         },
     )
 
+
+# ============================================================
+# GET: ЛЕНТА / КОНКРЕТНЫЙ ПАРНИКОВЫЙ ГАЗ
+# ============================================================
 
 @router.get(
     "/greenhouse-gases/{greenhouse_gas_id}",
@@ -187,7 +270,14 @@ def get_greenhouse_gas(
     ),
 ):
     """
-    Страница конкретного опубликованного парникового газа.
+    Страница конкретного опубликованного
+    парникового газа.
+
+    Перед отображением рассчитывается изменение
+    температуры на основе двух параметров:
+
+    1. concentration_ppm
+    2. global_warming_potential_100y
     """
 
     published = get_published_greenhouse_gases()
@@ -195,8 +285,11 @@ def get_greenhouse_gas(
     current_index = next(
         (
             index
-            for index, greenhouse_gas in enumerate(published)
-            if greenhouse_gas["id"] == greenhouse_gas_id
+            for index, greenhouse_gas in enumerate(
+                published
+            )
+            if greenhouse_gas["id"]
+            == greenhouse_gas_id
         ),
         None,
     )
@@ -213,11 +306,43 @@ def get_greenhouse_gas(
         if next_index >= len(published):
             next_index = 0
 
-        greenhouse_gas = published[next_index]
+        greenhouse_gas = published[
+            next_index
+        ]
     else:
-        greenhouse_gas = published[current_index]
+        greenhouse_gas = published[
+            current_index
+        ]
 
-    prepared = prepare_greenhouse_gas(greenhouse_gas)
+    concentration_ppm = greenhouse_gas[
+        "concentration_ppm"
+    ]
+
+    global_warming_potential_100y = (
+        greenhouse_gas[
+            "global_warming_potential_100y"
+        ]
+    )
+
+    # Расчёт температуры по двум параметрам.
+    temperature_change = (
+        calculate_temperature_change(
+            concentration_ppm=concentration_ppm,
+            global_warming_potential_100y=(
+                global_warming_potential_100y
+            ),
+        )
+    )
+
+    prepared = prepare_greenhouse_gas(
+        greenhouse_gas
+    )
+
+    # Передаём рассчитанный результат
+    # в шаблон ленты.
+    prepared["temperature_change"] = (
+        temperature_change
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -227,3 +352,4 @@ def get_greenhouse_gas(
             "greenhouse_gas": prepared,
         },
     )
+
