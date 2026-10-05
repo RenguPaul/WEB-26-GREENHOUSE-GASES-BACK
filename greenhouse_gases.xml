@@ -1,0 +1,231 @@
+<mxfile host="Electron" agent="Codex">
+  <diagram id="greenhouse-gases-er" name="ER-диаграмма">
+    <mxGraphModel dx="1270" dy="764" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="users" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=1;fontStyle=0;align=left;resizeLast=1;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="108" width="360" x="71" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="users-header" parent="users" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=#e6e6e6;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="" vertex="1">
+          <mxGeometry height="32" width="360" as="geometry" />
+        </mxCell>
+        <mxCell id="users-header-cell" parent="users-header" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="users" vertex="1">
+          <mxGeometry height="32" width="360" as="geometry">
+            <mxRectangle height="32" width="360" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-username" parent="users" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="360" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="users-username-name" parent="users-username" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="username" vertex="1">
+          <mxGeometry height="38" width="155" as="geometry">
+            <mxRectangle height="38" width="155" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-username-type" parent="users-username" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="VARCHAR(255)  NOT NULL  UQ" vertex="1">
+          <mxGeometry height="38" width="205" x="155" as="geometry">
+            <mxRectangle height="38" width="205" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-password" parent="users" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="360" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="users-password-name" parent="users-password" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="password" vertex="1">
+          <mxGeometry height="38" width="155" as="geometry">
+            <mxRectangle height="38" width="155" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-password-type" parent="users-password" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="VARCHAR(255)  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="205" x="155" as="geometry">
+            <mxRectangle height="38" width="205" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="greenhouse-gases" parent="1" style="shape=table;startSize=1;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=1;fontStyle=0;align=left;resizeLast=1;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="345" width="560" x="639" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="greenhouse-gases-header" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=#e6e6e6;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="" vertex="1">
+          <mxGeometry height="32" width="560" y="1" as="geometry" />
+        </mxCell>
+        <mxCell id="greenhouse-gases-header-cell" parent="greenhouse-gases-header" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="greenhouse_gases" vertex="1">
+          <mxGeometry height="32" width="560" as="geometry">
+            <mxRectangle height="32" width="560" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-name" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="33" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-name-name" parent="gg-name" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="name" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-name-type" parent="gg-name" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="VARCHAR(255)  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-status" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="71" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-status-name" parent="gg-status" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="status" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-status-type" parent="gg-status" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="VARCHAR(50)  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-image" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="109" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-image-name" parent="gg-image" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="image_url" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-image-type" parent="gg-image" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="TEXT  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-video" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="147" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-video-name" parent="gg-video" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="video_url" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-video-type" parent="gg-video" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="TEXT  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-concentration" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-concentration-name" parent="gg-concentration" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="concentration_ppm" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-concentration-type" parent="gg-concentration" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="FLOAT  NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-temperature" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="223" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-temperature-name" parent="gg-temperature" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="temperature_change_c" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-temperature-type" parent="gg-temperature" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="FLOAT  NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-created" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="560" y="261" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-created-name" parent="gg-created" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="created_at" vertex="1">
+          <mxGeometry height="38" width="260" as="geometry">
+            <mxRectangle height="38" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-created-type" parent="gg-created" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="DATETIME  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="300" x="260" as="geometry">
+            <mxRectangle height="38" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-published" parent="greenhouse-gases" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="45" width="560" y="299" as="geometry" />
+        </mxCell>
+        <mxCell id="gg-published-name" parent="gg-published" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="published_at" vertex="1">
+          <mxGeometry height="45" width="260" as="geometry">
+            <mxRectangle height="45" width="260" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gg-published-type" parent="gg-published" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="DATETIME  NULL" vertex="1">
+          <mxGeometry height="45" width="300" x="260" as="geometry">
+            <mxRectangle height="45" width="300" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="likes" parent="1" style="shape=table;startSize=1;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=1;fontStyle=0;align=left;resizeLast=1;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;" value="" vertex="1">
+          <mxGeometry height="109" width="462" x="504" y="734" as="geometry" />
+        </mxCell>
+        <mxCell id="likes-header" parent="likes" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=#e6e6e6;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="" vertex="1">
+          <mxGeometry height="32" width="462" y="1" as="geometry" />
+        </mxCell>
+        <mxCell id="likes-header-cell" parent="likes-header" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;fontStyle=1;align=center;verticalAlign=middle;html=1;" value="likes" vertex="1">
+          <mxGeometry height="32" width="462" as="geometry">
+            <mxRectangle height="32" width="462" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="likes-user" parent="likes" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="462" y="33" as="geometry" />
+        </mxCell>
+        <mxCell id="likes-user-name" parent="likes-user" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;html=1;" value="PK, FK  user_id" vertex="1">
+          <mxGeometry height="38" width="220" as="geometry">
+            <mxRectangle height="38" width="220" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="likes-user-type" parent="likes-user" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="INTEGER  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="242" x="220" as="geometry">
+            <mxRectangle height="38" width="242" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="likes-greenhouse-gas" parent="likes" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;strokeColor=#000000;html=1;" value="" vertex="1">
+          <mxGeometry height="38" width="462" y="71" as="geometry" />
+        </mxCell>
+        <mxCell id="likes-greenhouse-gas-name" parent="likes-greenhouse-gas" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;fontStyle=1;html=1;" value="PK, FK  greenhouse_gas_id" vertex="1">
+          <mxGeometry height="38" width="220" as="geometry">
+            <mxRectangle height="38" width="220" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="likes-greenhouse-gas-type" parent="likes-greenhouse-gas" style="shape=partialRectangle;connectable=0;fillColor=none;strokeColor=none;align=left;spacingLeft=8;html=1;" value="INTEGER  NOT NULL" vertex="1">
+          <mxGeometry height="38" width="242" x="220" as="geometry">
+            <mxRectangle height="38" width="242" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-to-greenhouse-gases" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERone;startFill=0;strokeColor=#000000;strokeWidth=1;startSize=18;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="499" y="162" />
+              <mxPoint x="499" y="181" />
+            </Array>
+            <mxPoint x="430" y="162" as="sourcePoint" />
+            <mxPoint x="637" y="181" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="users-to-likes" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERone;startFill=0;strokeColor=#000000;strokeWidth=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.45;entryDx=0;entryDy=0;startSize=18;" target="likes" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="251" y="674" />
+              <mxPoint x="429" y="674" />
+              <mxPoint x="429" y="783" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="greenhouse-gases-to-likes" edge="1" parent="1" source="gg-published" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERone;startFill=0;strokeColor=#000000;strokeWidth=1;startSize=18;" target="likes-greenhouse-gas" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1034" y="671" />
+              <mxPoint x="1134" y="671" />
+              <mxPoint x="1134" y="721" />
+              <mxPoint x="1053" y="721" />
+              <mxPoint x="1053" y="830" />
+            </Array>
+            <mxPoint x="1034" y="612" as="sourcePoint" />
+            <mxPoint x="1065" y="830.05" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

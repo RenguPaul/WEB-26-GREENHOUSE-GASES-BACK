@@ -40,14 +40,15 @@ class GreenhouseGas(Base):
         nullable=False,
     )
 
-    image_url: Mapped[str | None] = mapped_column(
+    # Обязательные URL: по схеме БД значение должно быть заполнено.
+    image_url: Mapped[str] = mapped_column(
         Text,
-        nullable=True,
+        nullable=False,
     )
 
-    video_url: Mapped[str | None] = mapped_column(
+    video_url: Mapped[str] = mapped_column(
         Text,
-        nullable=True,
+        nullable=False,
     )
 
     concentration_ppm: Mapped[float | None] = mapped_column(

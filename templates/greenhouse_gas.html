@@ -92,16 +92,19 @@
 
                     </div>
 
+                    <a
+                        href="/greenhouse-gases/{{ greenhouse_gas.id }}?next=true"
+                        class="next-button"
+                        aria-label="Следующий"
+                        title="Следующий"
+                    >
+                        →
+                    </a>
+
                 </div>
 
-                <a
-                    href="/greenhouse-gases/{{ greenhouse_gas.id }}?next=true"
-                    class="primary-button"
-                >
-                    Следующий
-                </a>
-
             </div>
+
 
             <div class="feed-info">
 
@@ -132,15 +135,19 @@
                 <div class="feed-info-item">
 
                     <div class="feed-info-value">
+
                         {% if greenhouse_gas.temperature_change_c is not none %}
+
                             {% if greenhouse_gas.temperature_change_c > 0 %}
                                 +{{ greenhouse_gas.temperature_change_c }}
                             {% else %}
                                 {{ greenhouse_gas.temperature_change_c }}
                             {% endif %}
+
                         {% else %}
                             —
                         {% endif %}
+
                     </div>
 
                     <div class="feed-info-label">
@@ -153,6 +160,7 @@
                     class="like-row"
                     aria-label="Количество лайков"
                 >
+
                     <span class="heart">
                         ♡
                     </span>
@@ -160,6 +168,7 @@
                     <span class="like-count">
                         {{ greenhouse_gas.likes_count }}
                     </span>
+
                 </div>
 
             </div>

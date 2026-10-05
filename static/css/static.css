@@ -106,7 +106,6 @@ a {
 
 .gas-chips span {
     display: inline-block;
-
     padding: 5px 8px;
 
     background: #bdd747;
@@ -122,6 +121,8 @@ a {
    ======================================== */
 
 .feed-description {
+    position: relative;
+
     margin: 0;
     max-width: 72%;
 
@@ -152,7 +153,6 @@ a {
     -webkit-line-clamp: 2;
 
     overflow: hidden;
-
     color: #ffffff;
 }
 
@@ -206,6 +206,54 @@ a {
 ~ .description-content
 .description-less {
     display: block;
+}
+
+
+/* ========================================
+   NEXT BUTTON
+   ======================================== */
+
+.next-button {
+    position: absolute;
+
+    right: -48px;
+    bottom: 0;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: transparent;
+    color: #ffffff;
+
+    border: 0;
+    border-radius: 0;
+
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.next-button:hover {
+    background: transparent;
+    color: #34E1F4;
+
+    border: 0;
+
+    transform: translateX(3px);
 }
 
 
@@ -289,7 +337,6 @@ a {
 .primary-button,
 .add-button {
     display: block;
-
     width: 100%;
 
     padding: 14px;
@@ -484,6 +531,10 @@ a {
     gap: 12px;
 }
 
+.page-header-content {
+    min-width: 0;
+}
+
 .page-label {
     color: #5d707c;
 
@@ -503,6 +554,8 @@ a {
 }
 
 .status-badge {
+    flex-shrink: 0;
+
     padding: 7px 10px;
 
     border-radius: 15px;
@@ -543,7 +596,7 @@ a {
 .upload-grid {
     display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
 
     gap: 10px;
 }
@@ -551,7 +604,8 @@ a {
 .upload-box {
     position: relative;
 
-    height: 145px;
+    width: 100%;
+    height: 170px;
 
     display: flex;
     align-items: center;
@@ -581,6 +635,8 @@ a {
     position: absolute;
 
     inset: 0;
+
+    display: block;
 
     width: 100%;
     height: 100%;
@@ -748,14 +804,6 @@ a {
     font-size: 17px;
 }
 
-
-/*
-   ФИЛЬТР
-
-   Слайдер и кнопка находятся
-   на одном горизонтальном уровне.
-*/
-
 .filter-form {
     width: 100%;
 }
@@ -777,9 +825,6 @@ a {
 
     letter-spacing: 1px;
 }
-
-
-/* Строка со слайдером и кнопкой */
 
 .filter-row {
     width: 100%;
@@ -850,9 +895,6 @@ a {
     cursor: pointer;
 }
 
-
-/* Chrome / Edge / Safari */
-
 .input-with-unit input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
@@ -880,9 +922,6 @@ a {
     cursor: pointer;
 }
 
-
-/* Firefox */
-
 .input-with-unit input[type="range"]::-moz-range-track {
     width: 100%;
     height: 4px;
@@ -905,9 +944,6 @@ a {
     cursor: pointer;
 }
 
-
-/* ppm */
-
 .input-with-unit span {
     flex: 0 0 auto;
 
@@ -917,9 +953,6 @@ a {
 
     font-size: 11px;
 }
-
-
-/* Кнопка фильтра */
 
 .filter-row button {
     flex: 0 0 auto;
@@ -972,13 +1005,19 @@ a {
 .tile-grid {
     display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 12px;
+
+    width: 100%;
+
+    align-items: stretch;
 }
 
 .prediction-card-container {
     min-width: 0;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
@@ -987,7 +1026,12 @@ a {
 }
 
 .prediction-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
+    height: 100%;
 
     overflow: hidden;
 
@@ -1011,23 +1055,35 @@ a {
 }
 
 .prediction-image-wrapper {
-    height: 145px;
-
     position: relative;
 
+    width: 100%;
+    height: 145px;
+    min-height: 145px;
+
     overflow: hidden;
+
+    flex-shrink: 0;
 }
 
 .prediction-image {
+    display: block;
+
     width: 100%;
     height: 100%;
-
-    display: block;
 
     object-fit: cover;
 }
 
 .prediction-card-content {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    width: 100%;
+    min-width: 0;
+
     padding: 10px;
 }
 
@@ -1040,6 +1096,8 @@ a {
 
     font-size: 13px;
     line-height: 1.25;
+
+    overflow-wrap: break-word;
 }
 
 .prediction-formula {
@@ -1049,6 +1107,8 @@ a {
 
     font-size: 11px;
     font-weight: 700;
+
+    overflow-wrap: break-word;
 }
 
 .prediction-concentration {
@@ -1073,6 +1133,8 @@ a {
     align-items: center;
 
     gap: 5px;
+
+    margin-top: auto;
 
     color: #5d707c;
 
