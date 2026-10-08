@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from api.api_handlers import router as api_router
 from api.handlers import router
 
 
@@ -21,7 +22,11 @@ app.mount(
 )
 
 
+# ЛР2: HTML/Jinja2 интерфейс
 app.include_router(router)
+
+# ЛР3: REST API
+app.include_router(api_router)
 
 
 if __name__ == "__main__":

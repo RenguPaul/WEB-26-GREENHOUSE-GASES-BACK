@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ROOT_USER: str = "root"
+    MINIO_ROOT_PASSWORD: str = "rootpassword"
+    MINIO_BUCKET: str = "climate-media"
+    MINIO_SECURE: bool = False
+
     @property
     def DATABASE_URL(self) -> str:
         return (
