@@ -1,9 +1,10 @@
 import math
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
+from api.dependencies import get_current_user_id
 from db.session import async_session_maker
 from repositories.greenhouse_gas import (
     create_draft_greenhouse_gas,
@@ -17,9 +18,6 @@ from repositories.greenhouse_gas import (
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
-
-
-CURRENT_USER_ID = 1
 
 # В БД image_url и video_url обязательны.
 # Пользователь не вводит их на первом шаге, поэтому при создании
@@ -99,11 +97,19 @@ def serialize_greenhouse_gas(
 )
 async def delete_greenhouse_gas_request(
     greenhouse_gas_id: int,
+    current_user_id: int = Depends(get_current_user_id),
 ):
     async with async_session_maker() as session:
-        await delete_greenhouse_gas(
+        deleted = await delete_greenhouse_gas(
             session=session,
             greenhouse_gas_id=greenhouse_gas_id,
+            creator_id=current_user_id,
+        )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Парниковый газ не найден или не принадлежит текущему пользователю",
         )
 
     return JSONResponse(
@@ -121,11 +127,12 @@ async def delete_greenhouse_gas_request(
 )
 async def get_greenhouse_gas_request(
     request: Request,
+    current_user_id: int = Depends(get_current_user_id),
 ):
     async with async_session_maker() as session:
         draft = await get_draft_greenhouse_gas(
             session=session,
-            creator_id=CURRENT_USER_ID,
+            creator_id=current_user_id,
         )
 
         published = await get_published_greenhouse_gases(
@@ -161,6 +168,7 @@ async def get_greenhouse_gas_request(
 )
 async def create_greenhouse_gas_request(
     request: Request,
+    current_user_id: int = Depends(get_current_user_id),
 ):
     form = await request.form()
 
@@ -175,7 +183,7 @@ async def create_greenhouse_gas_request(
     async with async_session_maker() as session:
         existing_draft = await get_draft_greenhouse_gas(
             session=session,
-            creator_id=CURRENT_USER_ID,
+            creator_id=current_user_id,
         )
 
         if existing_draft is not None:
@@ -209,7 +217,7 @@ async def create_greenhouse_gas_request(
             name=name,
             image_url=DEFAULT_IMAGE_URL,
             video_url=DEFAULT_VIDEO_URL,
-            creator_id=CURRENT_USER_ID,
+            creator_id=current_user_id,
         )
 
         published = await get_published_greenhouse_gases(
@@ -242,6 +250,7 @@ async def create_greenhouse_gas_request(
 )
 async def publish_greenhouse_gas_request(
     request: Request,
+    current_user_id: int = Depends(get_current_user_id),
 ):
     form = await request.form()
 
@@ -309,7 +318,7 @@ async def publish_greenhouse_gas_request(
     async with async_session_maker() as session:
         draft = await get_draft_greenhouse_gas(
             session=session,
-            creator_id=CURRENT_USER_ID,
+            creator_id=current_user_id,
         )
 
         if draft is None:
@@ -354,6 +363,7 @@ async def publish_greenhouse_gas_request(
 async def get_greenhouse_gas_catalog(
     request: Request,
     concentration: float | None = Query(default=None),
+    current_user_id: int = Depends(get_current_user_id),
 ):
     async with async_session_maker() as session:
         all_published = await get_published_greenhouse_gases(
@@ -409,6 +419,7 @@ async def get_greenhouse_gas(
     request: Request,
     greenhouse_gas_id: int,
     go_next: bool = Query(default=False, alias="next"),
+    current_user_id: int = Depends(get_current_user_id),
 ):
     async with async_session_maker() as session:
         published = await get_published_greenhouse_gases(

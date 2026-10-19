@@ -124,18 +124,25 @@ async def publish_greenhouse_gas(
 async def delete_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
-) -> None:
-    await session.execute(
+    creator_id: int,
+) -> bool:
+    result = await session.execute(
         text(
             """
             UPDATE greenhouse_gases
             SET status = 'удален'
             WHERE id = :greenhouse_gas_id
+              AND creator_id = :creator_id
+              AND status <> 'удален'
             """
         ),
-        {"greenhouse_gas_id": greenhouse_gas_id},
+        {
+            "greenhouse_gas_id": greenhouse_gas_id,
+            "creator_id": creator_id,
+        },
     )
     await session.commit()
+    return bool(result.rowcount)
 
 
 async def get_likes_counts(

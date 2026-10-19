@@ -619,3 +619,10 @@ https://github.com/RenguPaul/WEB-26-GREENHOUSE-GASES-BACK/
 ```text
 lab2
 ```
+
+
+---
+
+# Лабораторная работа №4
+
+Реализация регистрации, cookie-аутентификации, ролей `user`/`moderator` и хранения активных сессий в Redis описана в [`README_LR4.md`](README_LR4.md). Swagger: `/docs`; HTML-страницы: `/auth/register` и `/auth/login`. Диаграмма последовательности: `diagrams/lr4_sequence.drawio`.

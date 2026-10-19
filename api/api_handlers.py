@@ -30,10 +30,6 @@ from repositories.greenhouse_gas import (
     publish_api_greenhouse_gas,
     set_greenhouse_gas_like,
 )
-from repositories.user import (
-    create_user,
-    get_user_by_username,
-)
 from schemas.greenhouse_gas import (
     GreenhouseGasCreateResponse,
     GreenhouseGasDraftResponse,
@@ -41,11 +37,6 @@ from schemas.greenhouse_gas import (
     GreenhouseGasListItem,
     GreenhouseGasPublishResponse,
     LikeRequest,
-)
-from schemas.user import (
-    AuthStubResponse,
-    UserRegisterRequest,
-    UserRegisterResponse,
 )
 
 
@@ -613,90 +604,3 @@ async def delete_greenhouse_gas_api(
     }
 
 
-# ============================================================
-# ДОМЕН ПОЛЬЗОВАТЕЛЯ
-# ============================================================
-
-
-@router.post(
-    "/users/register",
-    response_model=UserRegisterResponse,
-    status_code=201,
-)
-async def register_user(
-    request: UserRegisterRequest,
-):
-    """
-    POST /api/users/register
-
-    Регистрация нового пользователя.
-    """
-
-    username = request.username.strip()
-
-    if not username:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "Имя пользователя "
-                "не может быть пустым"
-            ),
-        )
-
-    async with async_session_maker() as session:
-        existing_user = await get_user_by_username(
-            session=session,
-            username=username,
-        )
-
-        if existing_user is not None:
-            raise HTTPException(
-                status_code=409,
-                detail=(
-                    "Пользователь с таким именем "
-                    "уже существует"
-                ),
-            )
-
-        user = await create_user(
-            session=session,
-            username=username,
-            password=request.password,
-        )
-
-    return UserRegisterResponse(
-        id=user.id,
-        username=user.username,
-    )
-
-
-@router.post(
-    "/users/auth",
-    response_model=AuthStubResponse,
-)
-async def authenticate_user():
-    """
-    POST /api/users/auth
-
-    Заглушка авторизации для ЛР4.
-    """
-
-    return AuthStubResponse(
-        message="Авторизация будет реализована в ЛР4",
-    )
-
-
-@router.post(
-    "/users/deauth",
-    response_model=AuthStubResponse,
-)
-async def deauthenticate_user():
-    """
-    POST /api/users/deauth
-
-    Заглушка выхода из системы для ЛР4.
-    """
-
-    return AuthStubResponse(
-        message="Выход из системы будет реализован в ЛР4",
-    )
