@@ -6,7 +6,7 @@ from api.handlers import router
 
 
 app = FastAPI(
-    title="Greenhouse Gases",
+    title="Greenhouse Gases", 
     description=(
         "Сервис прогнозирования изменения температуры Земли "
         "в зависимости от содержания парниковых газов "
