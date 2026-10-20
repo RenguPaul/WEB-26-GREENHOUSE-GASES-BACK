@@ -74,13 +74,26 @@ async def _register(session: AsyncSession, request: UserRegisterRequest) -> User
     return await create_user(session, username, hash_password(request.password), role="user")
 
 
-@api_router.post("/register", response_model=UserRegisterResponse, status_code=201)
+@api_router.post(
+    "/register",
+    response_model=UserRegisterResponse,
+    status_code=201,
+    summary="Зарегистрировать пользователя",
+    description="Создаёт учётную запись. Пароль сохраняется в виде scrypt-хеша; роль user назначается автоматически.",
+    responses={400: {"description": "Некорректное имя пользователя"}, 409: {"description": "Имя уже занято"}},
+)
 async def register_user(data: UserRegisterRequest, session: AsyncSession = Depends(get_db)):
     user = await _register(session, data)
     return UserRegisterResponse(id=user.id, username=user.username, role=user.role)
 
 
-@api_router.post("/auth", response_model=AuthResponse)
+@api_router.post(
+    "/auth",
+    response_model=AuthResponse,
+    summary="Войти и создать сессию",
+    description="Проверяет имя и пароль, сохраняет серверную сессию в Redis и устанавливает HttpOnly cookie greenhouse_session.",
+    responses={401: {"description": "Неверное имя пользователя или пароль"}, 503: {"description": "Хранилище сессий недоступно"}},
+)
 async def authenticate_user(data: UserLoginRequest, request: Request, response: Response, session: AsyncSession = Depends(get_db)):
     user = await get_user_by_username(session, data.username.strip())
     if user is None or not await _verify_user_password(session, user, data.password):
@@ -89,18 +102,34 @@ async def authenticate_user(data: UserLoginRequest, request: Request, response: 
     return AuthResponse(message="Вход выполнен", user_id=user.id, username=user.username, role=user.role)
 
 
-@api_router.post("/deauth")
+@api_router.post(
+    "/deauth",
+    summary="Выйти из учётной записи",
+    description="Удаляет серверную сессию из Redis и очищает cookie.",
+)
 async def deauthenticate_user(request: Request, response: Response):
     await _delete_session(request, response)
     return {"message": "Выход выполнен"}
 
 
-@api_router.get("/me", response_model=UserPublic)
+@api_router.get(
+    "/me",
+    response_model=UserPublic,
+    summary="Получить текущего пользователя",
+    description="Требуется действующая cookie greenhouse_session.",
+    responses={401: {"description": "Не выполнен вход или сессия недействительна"}},
+)
 async def current_user(user: User = Depends(get_current_user)):
     return user
 
 
-@api_router.get("/moderators/users", response_model=list[UserPublic])
+@api_router.get(
+    "/moderators/users",
+    response_model=list[UserPublic],
+    summary="Получить пользователей (только модератор)",
+    description="Требуется действующая сессия пользователя с ролью moderator.",
+    responses={401: {"description": "Не выполнен вход"}, 403: {"description": "Недостаточно прав"}},
+)
 async def moderator_users(session: AsyncSession = Depends(get_db), moderator: User = Depends(require_moderator)):
     return await list_users(session)
 
