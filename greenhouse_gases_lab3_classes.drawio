@@ -1,0 +1,213 @@
+<mxfile host="Electron" agent="ChatGPT">
+  <diagram id="greenhouse-gases-lab3" name="Диаграмма классов ЛР3">
+    <mxGraphModel dx="1847" dy="1111" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e_catalog_api" edge="1" parent="1" source="catalog" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#777777;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="KCXNML7p838APKD-BuN8-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_feed_api" edge="1" parent="1" source="feed" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#777777;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="KCXNML7p838APKD-BuN8-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="306" y="221.0000000000001" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_add_api" edge="1" parent="1" source="add" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#777777;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="KCXNML7p838APKD-BuN8-8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="372" />
+              <mxPoint x="280" y="205" />
+            </Array>
+            <mxPoint x="306" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_registration_api" edge="1" parent="1" source="registration" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#777777;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="KCXNML7p838APKD-BuN8-11">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="443" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_gases_service" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startArrow=none;strokeColor=#777777;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="app_methods" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="205" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_users_service" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startArrow=none;strokeColor=#777777;fontSize=10;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="user_methods" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="395" y="443" />
+              <mxPoint x="395" y="487" />
+            </Array>
+            <mxPoint x="350" y="443" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_app_gas_model" edge="1" parent="1" source="app_api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="model_gas" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_app_like_model" edge="1" parent="1" source="app_api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="model_like" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1040" y="280" />
+              <mxPoint x="1040" y="303" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_user_model" edge="1" parent="1" source="user_api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="model_user" value="">
+          <mxGeometry relative="1" x="0.0008" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1020" y="475" />
+              <mxPoint x="1020" y="243" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_model_gas_table" edge="1" parent="1" source="model_gas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="table_gases" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1500" y="200" />
+              <mxPoint x="1500" y="502" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_model_user_table" edge="1" parent="1" source="model_user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="table_users" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1470" y="240" />
+              <mxPoint x="1470" y="750" />
+              <mxPoint x="1160" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_model_like_table" edge="1" parent="1" source="model_like" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;" target="table_likes" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1450" y="303" />
+              <mxPoint x="1450" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_user_gases" edge="1" parent="1" source="table_users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#555555;fontSize=10;labelBackgroundColor=#FFFFFF;" target="table_gases" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_likes" edge="1" parent="1" source="table_users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#555555;fontSize=10;labelBackgroundColor=#FFFFFF;" target="table_likes" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gases_likes" edge="1" parent="1" source="table_gases" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=none;strokeColor=#555555;fontSize=10;labelBackgroundColor=#FFFFFF;" target="table_likes" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1280" y="589" />
+              <mxPoint x="1308" y="589" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-2" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="360" width="220" x="10" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="registration" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=13;" value="Регистрация" vertex="1">
+          <mxGeometry height="65" width="150" x="45" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="add" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=13;" value="Добавление&#xa;парникового газа" vertex="1">
+          <mxGeometry height="65" width="150" x="45" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="feed" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=13;" value="Лента" vertex="1">
+          <mxGeometry height="65" width="150" x="45" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="catalog" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=13;" value="Каталог" vertex="1">
+          <mxGeometry height="65" width="150" x="45" y="172.5" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Фронтенд&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="90" y="142.5" as="geometry" />
+        </mxCell>
+        <mxCell id="app_api" parent="1" style="swimlane;html=1;startSize=30;horizontal=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#999999;fontStyle=1;fontSize=13;collapsible=0;" value="Домен парниковых газов — /api" vertex="1">
+          <mxGeometry height="200" width="510" x="440" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="app_methods" parent="app_api" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;rounded=0;fillColor=none;strokeColor=none;fontSize=11;spacingLeft=8;spacingTop=8;" value="+ GET /api/greenhouse-gases?concentration=...&lt;br&gt;+ GET /api/greenhouse-gases/published-gases&lt;br&gt;+ GET /api/greenhouse-gases/my-gas&lt;br&gt;+ POST /api/greenhouse-gases [multipart: image, video]&lt;br&gt;+ PUT /api/greenhouse-gases/{greenhouse_gas_id}/publish&lt;br&gt;+ DELETE /api/greenhouse-gases/{greenhouse_gas_id}&lt;br&gt;+ POST /api/greenhouse-gases/{greenhouse_gas_id}/like&lt;br&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="135" width="450" x="8" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Веб-сервис&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="80" x="630" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="user_api" parent="1" style="swimlane;html=1;startSize=30;horizontal=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#999999;fontStyle=1;fontSize=13;collapsible=0;" value="Домен пользователя — /api" vertex="1">
+          <mxGeometry height="170" width="510" x="440" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="user_methods" parent="user_api" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;rounded=0;fillColor=none;strokeColor=none;fontSize=12;spacingLeft=8;spacingTop=8;" value="+ POST /api/users/register&lt;br&gt;+ POST /api/users/auth [stub]&lt;br&gt;+ POST /api/users/deauth [stub]&lt;br&gt;." vertex="1">
+          <mxGeometry height="125" width="450" x="8" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-5" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="510" width="570" x="410" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="model_like" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;align=left;spacingLeft=6;spacingTop=5;" value="Like" vertex="1">
+          <mxGeometry height="45" width="70" x="1130" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="model_user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;align=left;spacingLeft=6;spacingTop=5;" value="User" vertex="1">
+          <mxGeometry height="55" width="95" x="1250" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="model_gas" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=left;spacingLeft=6;spacingTop=5;" value="GreenhouseGas" vertex="1">
+          <mxGeometry height="50" width="95" x="1130" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-8" parent="1" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;rotation=-180;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="330" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-11" parent="1" style="shape=providedRequiredInterface;html=1;verticalLabelPosition=bottom;sketch=0;rotation=-180;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="330" y="432.5" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;API greenhouse gases&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="150" x="270" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;API users&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="300" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-19" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="270" width="340" x="1070" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-20" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Модель&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="1205" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="table_users" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;align=left;spacingLeft=6;spacingTop=5;" value="users" vertex="1">
+          <mxGeometry height="75" width="130" x="1080" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="table_likes" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=left;spacingLeft=6;spacingTop=5;" value="likes" vertex="1">
+          <mxGeometry height="75" width="135" x="1270" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="table_gases" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=10;align=left;spacingLeft=6;spacingTop=5;" value="greenhouse_gases" vertex="1">
+          <mxGeometry height="95" width="280" x="1080" y="452.5" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-21" parent="1" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="360" width="340" x="1070" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;База данных&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="80" x="1190" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-23" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="1090" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-24" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0...*" vertex="1">
+          <mxGeometry height="30" width="60" x="1205" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-25" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="1267.5" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0...*" vertex="1">
+          <mxGeometry height="30" width="60" x="1300" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0...*" vertex="1">
+          <mxGeometry height="30" width="60" x="1230" y="675" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-28" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="1190" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="KCXNML7p838APKD-BuN8-30" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=classic;startArrow=none;strokeColor=#888888;fontSize=10;entryX=-0.001;entryY=0.641;entryDx=0;entryDy=0;entryPerimeter=0;" target="model_user" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1080" y="298" />
+              <mxPoint x="1080" y="260" />
+            </Array>
+            <mxPoint x="950" y="297.5" as="sourcePoint" />
+            <mxPoint x="1240" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
