@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-10-20T00:00:00.000Z" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="lr4-sequence" name="LR4 Sequence">
+    <mxGraphModel dx="827" dy="1169" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Диаграмма последовательности — ЛР4: авторизация и сессии" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="43.4" y="9.3" width="713.0" height="24.8" as="geometry" />
+        </mxCell>
+        <mxCell id="user_head" value="Пользователь" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="37.2" y="49.6" width="99.2" height="26.04" as="geometry" />
+        </mxCell>
+        <mxCell id="user_line" value="" style="shape=line;strokeColor=#666666;dashed=1;dashPattern=4 4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="86.8" y="75.64" width="0.0" height="471.2" as="geometry" />
+        </mxCell>
+        <mxCell id="browser_head" value="Браузер" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="186.0" y="49.6" width="99.2" height="26.04" as="geometry" />
+        </mxCell>
+        <mxCell id="browser_line" value="" style="shape=line;strokeColor=#666666;dashed=1;dashPattern=4 4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="235.6" y="75.64" width="0.0" height="471.2" as="geometry" />
+        </mxCell>
+        <mxCell id="api_head" value="FastAPI" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="334.8" y="49.6" width="99.2" height="26.04" as="geometry" />
+        </mxCell>
+        <mxCell id="api_line" value="" style="shape=line;strokeColor=#666666;dashed=1;dashPattern=4 4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="384.4" y="75.64" width="0.0" height="471.2" as="geometry" />
+        </mxCell>
+        <mxCell id="db_head" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="483.6" y="49.6" width="99.2" height="26.04" as="geometry" />
+        </mxCell>
+        <mxCell id="db_line" value="" style="shape=line;strokeColor=#666666;dashed=1;dashPattern=4 4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="533.2" y="75.64" width="0.0" height="471.2" as="geometry" />
+        </mxCell>
+        <mxCell id="redis_head" value="Redis" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="632.4" y="49.6" width="99.2" height="26.04" as="geometry" />
+        </mxCell>
+        <mxCell id="redis_line" value="" style="shape=line;strokeColor=#666666;dashed=1;dashPattern=4 4;html=1;" parent="1" vertex="1">
+          <mxGeometry x="682.0" y="75.64" width="0.0" height="471.2" as="geometry" />
+        </mxCell>
+        <mxCell id="msg0" value="1. Открыть форму регистрации" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="86.8" y="93.0" as="sourcePoint" />
+            <mxPoint x="235.6" y="93.0" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg1" value="2. GET /auth/register" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235.6" y="117.8" as="sourcePoint" />
+            <mxPoint x="384.4" y="117.8" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="3. HTML-форма регистрации" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="139.5" as="sourcePoint" />
+            <mxPoint x="235.6" y="139.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" value="4. Ввести имя и пароль" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="86.8" y="161.2" as="sourcePoint" />
+            <mxPoint x="235.6" y="161.2" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" value="5. POST /auth/register" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235.6" y="182.9" as="sourcePoint" />
+            <mxPoint x="384.4" y="182.9" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" value="6. Проверить уникальность username" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="204.6" as="sourcePoint" />
+            <mxPoint x="533.2" y="204.6" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" value="7. Пользователь отсутствует / доступен" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="533.2" y="226.3" as="sourcePoint" />
+            <mxPoint x="384.4" y="226.3" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" value="8. INSERT users (хеш пароля, role=user)" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="248.0" as="sourcePoint" />
+            <mxPoint x="533.2" y="248.0" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8" value="9. Новый пользователь" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="533.2" y="269.7" as="sourcePoint" />
+            <mxPoint x="384.4" y="269.7" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9" value="10. 303 Redirect на /auth/login" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="291.4" as="sourcePoint" />
+            <mxPoint x="235.6" y="291.4" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg10" value="11. Ввести учётные данные" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="86.8" y="313.1" as="sourcePoint" />
+            <mxPoint x="235.6" y="313.1" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg11" value="12. POST /api/users/auth или /auth/login" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235.6" y="334.8" as="sourcePoint" />
+            <mxPoint x="384.4" y="334.8" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg12" value="13. Найти пользователя и проверить хеш" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="356.5" as="sourcePoint" />
+            <mxPoint x="533.2" y="356.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg13" value="14. user id + role" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="533.2" y="378.2" as="sourcePoint" />
+            <mxPoint x="384.4" y="378.2" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg14" value="15. Lua SET session:&lt;token&gt; с TTL" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="399.9" as="sourcePoint" />
+            <mxPoint x="682.0" y="399.9" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg15" value="16. Redis подтверждает запись" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="682.0" y="421.6" as="sourcePoint" />
+            <mxPoint x="384.4" y="421.6" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg16" value="17. Set-Cookie: HttpOnly, SameSite=Lax" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="443.3" as="sourcePoint" />
+            <mxPoint x="235.6" y="443.3" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg17" value="18. Запрос защищённого ресурса" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="86.8" y="465.0" as="sourcePoint" />
+            <mxPoint x="235.6" y="465.0" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg18" value="19. Cookie greenhouse_session" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235.6" y="486.7" as="sourcePoint" />
+            <mxPoint x="384.4" y="486.7" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg19" value="20. Lua GET session:&lt;token&gt;" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;strokeColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="508.4" as="sourcePoint" />
+            <mxPoint x="682.0" y="508.4" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg20" value="21. Получить user_id из JSON сессии" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="682.0" y="530.1" as="sourcePoint" />
+            <mxPoint x="384.4" y="530.1" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg21" value="22. Проверить роль и выполнить действие" style="endArrow=block;endFill=1;html=1;rounded=0;strokeWidth=1.3;dashed=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="384.4" y="551.8" as="sourcePoint" />
+            <mxPoint x="235.6" y="551.8" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="logout_note" value="Выход: POST /api/users/deauth или /auth/logout → удаление session:&lt;token&gt; в Redis → очистка cookie → Redirect на страницу входа." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;align=left;spacing=10;" parent="1" vertex="1">
+          <mxGeometry x="37.2" y="570.4" width="694.4" height="37.2" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

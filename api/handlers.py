@@ -1,170 +1,153 @@
 import math
 
-from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
-from data.collections import greenhouse_gases
+from api.dependencies import get_current_user_id
+from db.session import async_session_maker
+from repositories.greenhouse_gas import (
+    create_draft_greenhouse_gas,
+    delete_greenhouse_gas,
+    get_draft_greenhouse_gas,
+    get_likes_counts,
+    get_published_greenhouse_gases,
+    publish_greenhouse_gas,
+)
 
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-
-MINIO_URL = "http://localhost:9000/climate-media"
+# В БД image_url и video_url обязательны.
+# Пользователь не вводит их на первом шаге, поэтому при создании
+# черновика используются стандартные медиафайлы проекта.
+DEFAULT_IMAGE_URL = "/static/media/default-greenhouse.jpg"
+DEFAULT_VIDEO_URL = "/static/media/default-greenhouse.mp4"
 
 REFERENCE_CO2_PPM = 280.0
 CLIMATE_SENSITIVITY_C = 3.0
 
 
-def get_published_greenhouse_gases():
-    return [
-        greenhouse_gas
-        for greenhouse_gas in greenhouse_gases
-        if greenhouse_gas["status"] == "published"
-    ]
-
-
 def calculate_temperature_change(
     concentration_ppm: float,
-    global_warming_potential_100y: float,
 ) -> float:
     """
     Упрощённый расчёт изменения средней температуры
-    с учётом концентрации парникового газа и его GWP100.
+    относительно базовой концентрации CO₂ = 280 ppm.
 
-    Сначала рассчитывается эквивалентная концентрация CO₂:
+    ΔT = S * log2(C / C0)
 
-        C_eff = concentration_ppm * GWP100
-
-    Затем изменение температуры:
-
-        ΔT = S * log2(C_eff / C0)
-
-    где:
-
-        S  = 3.0 °C — чувствительность климата;
-        C0 = 280 ppm — базовая концентрация CO₂.
+    S  = 3 °C
+    C0 = 280 ppm
     """
 
     if concentration_ppm <= 0:
         return 0.0
 
-    if global_warming_potential_100y <= 0:
-        return 0.0
-
-    effective_concentration = (
-        concentration_ppm
-        * global_warming_potential_100y
-    )
-
     return round(
         CLIMATE_SENSITIVITY_C
         * math.log2(
-            effective_concentration
-            / REFERENCE_CO2_PPM
+            concentration_ppm / REFERENCE_CO2_PPM
         ),
         1,
     )
 
 
-def prepare_greenhouse_gas(
+def get_media_url(
+    value: str | None,
+    default_url: str,
+) -> str:
+    if value and value.strip():
+        return value
+
+    return default_url
+
+
+def serialize_greenhouse_gas(
     greenhouse_gas,
+    likes_count: int = 0,
+) -> dict:
+    return {
+        "id": greenhouse_gas.id,
+        "name": greenhouse_gas.name,
+        "formula": greenhouse_gas.formula,
+        "global_warming_potential_100y": (
+            greenhouse_gas.global_warming_potential_100y
+        ),
+        "short_description": greenhouse_gas.short_description,
+        "status": greenhouse_gas.status,
+        "image_url": get_media_url(
+            greenhouse_gas.image_url,
+            DEFAULT_IMAGE_URL,
+        ),
+        "video_url": get_media_url(
+            greenhouse_gas.video_url,
+            DEFAULT_VIDEO_URL,
+        ),
+        "concentration_ppm": greenhouse_gas.concentration_ppm,
+        "temperature_change_c": greenhouse_gas.temperature_change_c,
+        "likes_count": likes_count,
+    }
+
+
+# POST: УДАЛЕНИЕ
+@router.post(
+    "/greenhouse-gases/{greenhouse_gas_id}/delete",
+)
+async def delete_greenhouse_gas_request(
+    greenhouse_gas_id: int,
+    current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    Подготавливает данные парникового газа
-    для передачи в шаблоны.
-    """
+    async with async_session_maker() as session:
+        deleted = await delete_greenhouse_gas(
+            session=session,
+            greenhouse_gas_id=greenhouse_gas_id,
+            creator_id=current_user_id,
+        )
 
-    prepared = greenhouse_gas.copy()
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Парниковый газ не найден или не принадлежит текущему пользователю",
+        )
 
-    prepared["likes_count"] = len(
-        greenhouse_gas["likes"]
+    return JSONResponse(
+        content={
+            "message": "Парниковый газ удалён",
+            "id": greenhouse_gas_id,
+        }
     )
 
-    prepared["image_url"] = (
-        f"{MINIO_URL}/{greenhouse_gas['image_key']}"
-    )
 
-    prepared["video_url"] = (
-        f"{MINIO_URL}/{greenhouse_gas['video_key']}"
-    )
-
-    return prepared
-
-
-# ============================================================
-# GET: СТРАНИЦА ЗАЯВКИ
-# ============================================================
-
+# GET: СТРАНИЦА СОЗДАНИЯ / ПУБЛИКАЦИИ
 @router.get(
     "/greenhouse-gases/request",
     response_class=HTMLResponse,
 )
-def get_greenhouse_gas_request(
+async def get_greenhouse_gas_request(
     request: Request,
-    concentration: float | None = Query(
-        default=None
-    ),
-    gwp: float | None = Query(
-        default=None
-    ),
+    current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    Страница создания заявки.
-
-    Расчёт выполняется по двум параметрам:
-
-    - concentration — концентрация газа, ppm;
-    - gwp — потенциал глобального потепления GWP100.
-    """
-
-    draft = next(
-        (
-            greenhouse_gas
-            for greenhouse_gas in greenhouse_gases
-            if greenhouse_gas["status"] == "draft"
-        ),
-        None,
-    )
-
-    if draft is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Черновик парникового газа не найден",
+    async with async_session_maker() as session:
+        draft = await get_draft_greenhouse_gas(
+            session=session,
+            creator_id=current_user_id,
         )
 
-    if concentration is None:
-        concentration_value = draft[
-            "concentration_ppm"
-        ]
-    else:
-        concentration_value = concentration
-
-    if gwp is None:
-        gwp_value = draft[
-            "global_warming_potential_100y"
-        ]
-    else:
-        gwp_value = gwp
-
-    greenhouse_gas = prepare_greenhouse_gas(
-        draft
-    )
-
-    greenhouse_gas["concentration_ppm"] = (
-        concentration_value
-    )
-
-    greenhouse_gas[
-        "global_warming_potential_100y"
-    ] = gwp_value
-
-    greenhouse_gas["temperature_change"] = (
-        calculate_temperature_change(
-            concentration_ppm=concentration_value,
-            global_warming_potential_100y=gwp_value,
+        published = await get_published_greenhouse_gases(
+            session=session,
         )
+
+    greenhouse_gas = None
+
+    if draft is not None:
+        greenhouse_gas = serialize_greenhouse_gas(draft)
+
+    first_greenhouse_gas_id = (
+        published[0].id
+        if published
+        else None
     )
 
     return templates.TemplateResponse(
@@ -173,67 +156,246 @@ def get_greenhouse_gas_request(
         context={
             "request": request,
             "greenhouse_gas": greenhouse_gas,
-            "concentration": concentration_value,
-            "gwp": gwp_value,
+            "first_greenhouse_gas_id": first_greenhouse_gas_id,
         },
     )
 
 
-# ============================================================
-# GET: КАТАЛОГ
-# ============================================================
+# POST: СОЗДАНИЕ ЧЕРНОВИКА
+@router.post(
+    "/greenhouse-gases/request",
+    response_class=HTMLResponse,
+)
+async def create_greenhouse_gas_request(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id),
+):
+    form = await request.form()
 
+    name = str(form.get("name", "")).strip()
+
+    if not name:
+        raise HTTPException(
+            status_code=400,
+            detail="Название парникового газа не указано",
+        )
+
+    async with async_session_maker() as session:
+        existing_draft = await get_draft_greenhouse_gas(
+            session=session,
+            creator_id=current_user_id,
+        )
+
+        if existing_draft is not None:
+            greenhouse_gas = serialize_greenhouse_gas(existing_draft)
+
+            published = await get_published_greenhouse_gases(
+                session=session,
+            )
+
+            first_greenhouse_gas_id = (
+                published[0].id
+                if published
+                else None
+            )
+
+            return templates.TemplateResponse(
+                request=request,
+                name="greenhouse_gas_request.html",
+                context={
+                    "request": request,
+                    "greenhouse_gas": greenhouse_gas,
+                    "first_greenhouse_gas_id": first_greenhouse_gas_id,
+                },
+            )
+
+        # URL-поля обязательны в БД, поэтому при нажатии «Далее»
+        # записываем стандартные URL, а не требуем несуществующие
+        # поля формы.
+        draft = await create_draft_greenhouse_gas(
+            session=session,
+            name=name,
+            image_url=DEFAULT_IMAGE_URL,
+            video_url=DEFAULT_VIDEO_URL,
+            creator_id=current_user_id,
+        )
+
+        published = await get_published_greenhouse_gases(
+            session=session,
+        )
+
+    greenhouse_gas = serialize_greenhouse_gas(draft)
+
+    first_greenhouse_gas_id = (
+        published[0].id
+        if published
+        else None
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="greenhouse_gas_request.html",
+        context={
+            "request": request,
+            "greenhouse_gas": greenhouse_gas,
+            "first_greenhouse_gas_id": first_greenhouse_gas_id,
+        },
+    )
+
+
+# POST: ПУБЛИКАЦИЯ
+@router.post(
+    "/greenhouse-gases/publish",
+    response_class=HTMLResponse,
+)
+async def publish_greenhouse_gas_request(
+    request: Request,
+    current_user_id: int = Depends(get_current_user_id),
+):
+    form = await request.form()
+
+    formula = str(form.get("formula", "")).strip()
+
+    short_description = str(
+        form.get("short_description", "")
+    ).strip()
+
+    global_warming_potential_raw = form.get(
+        "global_warming_potential_100y"
+    )
+
+    concentration_raw = form.get("concentration")
+
+    global_warming_potential = None
+
+    if (
+        global_warming_potential_raw is not None
+        and str(global_warming_potential_raw).strip()
+    ):
+        try:
+            global_warming_potential = float(
+                global_warming_potential_raw
+            )
+        except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=400,
+                detail="Некорректное значение GWP100",
+            )
+
+        if global_warming_potential < 0:
+            raise HTTPException(
+                status_code=400,
+                detail="GWP100 не может быть отрицательным",
+            )
+
+    concentration = None
+
+    if (
+        concentration_raw is not None
+        and str(concentration_raw).strip()
+    ):
+        try:
+            concentration = float(concentration_raw)
+        except (TypeError, ValueError):
+            raise HTTPException(
+                status_code=400,
+                detail="Некорректное значение концентрации",
+            )
+
+        if concentration <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Концентрация должна быть больше нуля",
+            )
+
+    temperature_change = None
+
+    if concentration is not None:
+        temperature_change = calculate_temperature_change(
+            concentration
+        )
+
+    async with async_session_maker() as session:
+        draft = await get_draft_greenhouse_gas(
+            session=session,
+            creator_id=current_user_id,
+        )
+
+        if draft is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Черновик парникового газа не найден",
+            )
+
+        published = await publish_greenhouse_gas(
+            session=session,
+            greenhouse_gas_id=draft.id,
+            formula=formula or None,
+            short_description=short_description or None,
+            global_warming_potential_100y=global_warming_potential,
+            concentration_ppm=concentration,
+            temperature_change_c=temperature_change,
+        )
+
+    if published is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Черновик парникового газа не найден",
+        )
+
+    greenhouse_gas = serialize_greenhouse_gas(published)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="greenhouse_gas.html",
+        context={
+            "request": request,
+            "greenhouse_gas": greenhouse_gas,
+        },
+    )
+
+
+# GET: КАТАЛОГ
 @router.get(
     "/greenhouse-gases/catalog",
     response_class=HTMLResponse,
 )
-def get_greenhouse_gas_catalog(
+async def get_greenhouse_gas_catalog(
     request: Request,
-    concentration: float | None = Query(
-        default=None
-    ),
+    concentration: float | None = Query(default=None),
+    current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    Каталог опубликованных парниковых газов.
-
-    Фильтрация выполняется по концентрации.
-    """
-
-    published = get_published_greenhouse_gases()
-
-    if concentration is not None:
-        published = [
-            greenhouse_gas
-            for greenhouse_gas in published
-            if greenhouse_gas["concentration_ppm"]
-            <= concentration
-        ]
-
-    prepared = []
-
-    for greenhouse_gas in published:
-        item = prepare_greenhouse_gas(
-            greenhouse_gas
+    async with async_session_maker() as session:
+        all_published = await get_published_greenhouse_gases(
+            session=session,
         )
 
-        # Температура рассчитывается из двух
-        # предметных параметров.
-        item["temperature_change"] = (
-            calculate_temperature_change(
-                concentration_ppm=(
-                    greenhouse_gas[
-                        "concentration_ppm"
-                    ]
-                ),
-                global_warming_potential_100y=(
-                    greenhouse_gas[
-                        "global_warming_potential_100y"
-                    ]
-                ),
-            )
+        published = await get_published_greenhouse_gases(
+            session=session,
+            concentration=concentration,
         )
 
-        prepared.append(item)
+        likes_counts = await get_likes_counts(
+            session=session,
+            greenhouse_gas_ids=[
+                greenhouse_gas.id
+                for greenhouse_gas in published
+            ],
+        )
+
+    prepared = [
+        serialize_greenhouse_gas(
+            greenhouse_gas,
+            likes_counts.get(greenhouse_gas.id, 0),
+        )
+        for greenhouse_gas in published
+    ]
+
+    first_greenhouse_gas_id = (
+        all_published[0].id
+        if all_published
+        else None
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -241,55 +403,42 @@ def get_greenhouse_gas_catalog(
         context={
             "request": request,
             "greenhouse_gases": prepared,
-            "concentration_filter": (
-                concentration
-                if concentration is not None
-                else 600
-            ),
-            "filter_applied": (
-                concentration is not None
-            ),
+            "concentration_filter": concentration,
+            "filter_applied": concentration is not None,
+            "first_greenhouse_gas_id": first_greenhouse_gas_id,
         },
     )
 
 
-# ============================================================
-# GET: ЛЕНТА / КОНКРЕТНЫЙ ПАРНИКОВЫЙ ГАЗ
-# ============================================================
-
+# GET: ЛЕНТА / КОНКРЕТНЫЙ ГАЗ
 @router.get(
     "/greenhouse-gases/{greenhouse_gas_id}",
     response_class=HTMLResponse,
 )
-def get_greenhouse_gas(
+async def get_greenhouse_gas(
     request: Request,
     greenhouse_gas_id: int,
-    go_next: bool = Query(
-        default=False,
-        alias="next",
-    ),
+    go_next: bool = Query(default=False, alias="next"),
+    current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    Страница конкретного опубликованного
-    парникового газа.
+    async with async_session_maker() as session:
+        published = await get_published_greenhouse_gases(
+            session=session,
+        )
 
-    Перед отображением рассчитывается изменение
-    температуры на основе двух параметров:
-
-    1. concentration_ppm
-    2. global_warming_potential_100y
-    """
-
-    published = get_published_greenhouse_gases()
+        likes_counts = await get_likes_counts(
+            session=session,
+            greenhouse_gas_ids=[
+                greenhouse_gas.id
+                for greenhouse_gas in published
+            ],
+        )
 
     current_index = next(
         (
             index
-            for index, greenhouse_gas in enumerate(
-                published
-            )
-            if greenhouse_gas["id"]
-            == greenhouse_gas_id
+            for index, greenhouse_gas in enumerate(published)
+            if greenhouse_gas.id == greenhouse_gas_id
         ),
         None,
     )
@@ -306,42 +455,13 @@ def get_greenhouse_gas(
         if next_index >= len(published):
             next_index = 0
 
-        greenhouse_gas = published[
-            next_index
-        ]
+        greenhouse_gas = published[next_index]
     else:
-        greenhouse_gas = published[
-            current_index
-        ]
+        greenhouse_gas = published[current_index]
 
-    concentration_ppm = greenhouse_gas[
-        "concentration_ppm"
-    ]
-
-    global_warming_potential_100y = (
-        greenhouse_gas[
-            "global_warming_potential_100y"
-        ]
-    )
-
-    # Расчёт температуры по двум параметрам.
-    temperature_change = (
-        calculate_temperature_change(
-            concentration_ppm=concentration_ppm,
-            global_warming_potential_100y=(
-                global_warming_potential_100y
-            ),
-        )
-    )
-
-    prepared = prepare_greenhouse_gas(
-        greenhouse_gas
-    )
-
-    # Передаём рассчитанный результат
-    # в шаблон ленты.
-    prepared["temperature_change"] = (
-        temperature_change
+    prepared = serialize_greenhouse_gas(
+        greenhouse_gas,
+        likes_counts.get(greenhouse_gas.id, 0),
     )
 
     return templates.TemplateResponse(
@@ -352,4 +472,3 @@ def get_greenhouse_gas(
             "greenhouse_gas": prepared,
         },
     )
-

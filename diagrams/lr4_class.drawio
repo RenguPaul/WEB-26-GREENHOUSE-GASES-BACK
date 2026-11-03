@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" modified="2026-11-01T00:00:00.000Z" agent="OpenAI" version="24.7.17">
+  <diagram id="UML-классы" name="UML-классы">
+    <mxGraphModel dx="827" dy="1169" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c_user" value="&lt;b&gt;&lt;u&gt;User&lt;/u&gt;&lt;/b&gt;&lt;hr/&gt;- id: int&lt;br/&gt;- username: str&lt;br/&gt;- password: str&lt;br/&gt;- role: str&lt;br/&gt;&lt;hr/&gt;+ register()&lt;br/&gt;+ authenticate()&lt;br/&gt;+ has_role(role): bool" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="70" width="320" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_gas" value="&lt;b&gt;&lt;u&gt;GreenhouseGas&lt;/u&gt;&lt;/b&gt;&lt;hr/&gt;- id: int&lt;br/&gt;- name: str&lt;br/&gt;- formula: str?&lt;br/&gt;- global_warming_potential_100y: float?&lt;br/&gt;- short_description: str?&lt;br/&gt;- status: str&lt;br/&gt;- image_url: str&lt;br/&gt;- video_url: str&lt;br/&gt;- concentration_ppm: float?&lt;br/&gt;- temperature_change_c: float?&lt;br/&gt;- created_at: datetime&lt;br/&gt;- creator_id: int?&lt;br/&gt;- published_at: datetime?&lt;br/&gt;&lt;hr/&gt;+ publish()&lt;br/&gt;+ calculate_temperature_change()" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="70" width="330" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_like" value="&lt;b&gt;&lt;u&gt;Like&lt;/u&gt;&lt;/b&gt;&lt;hr/&gt;- user_id: int&lt;br/&gt;- greenhouse_gas_id: int&lt;br/&gt;&lt;hr/&gt;+ add_like()" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="250" y="520" width="320" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_auth" value="&lt;b&gt;&lt;u&gt;AuthHandlers&lt;/u&gt;&lt;/b&gt;&lt;hr/&gt;+ register_user()&lt;br/&gt;+ authenticate_user()&lt;br/&gt;+ deauthenticate_user()&lt;br/&gt;+ current_user()&lt;br/&gt;+ moderator_users()" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="850" width="320" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_repo" value="&lt;b&gt;&lt;u&gt;GreenhouseGasRepository&lt;/u&gt;&lt;/b&gt;&lt;hr/&gt;+ create_draft()&lt;br/&gt;+ get_draft()&lt;br/&gt;+ publish()&lt;br/&gt;+ get_published()&lt;br/&gt;+ get_likes_counts()" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="850" width="330" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce1" value="creator 0..1 — 0..* records" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="c_user" target="c_gas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce2" value="1 — 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="c_user" target="c_like">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce3" value="1 — 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="c_gas" target="c_like">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce4" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="c_auth" target="c_user">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ce5" value="manages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="c_repo" target="c_gas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

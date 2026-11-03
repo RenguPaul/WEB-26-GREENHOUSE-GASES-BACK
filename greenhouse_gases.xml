@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" modified="2026-11-01T00:00:00.000Z" agent="OpenAI" version="24.7.17">
+  <diagram id="ER-диаграмма" name="ER-диаграмма">
+    <mxGraphModel dx="827" dy="1169" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="users" value="&lt;b&gt;users&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id : INTEGER NOT NULL&lt;br/&gt;username : VARCHAR(255) NOT NULL UNIQUE&lt;br/&gt;password : VARCHAR(255) NOT NULL&lt;br/&gt;role : VARCHAR(30) NOT NULL DEFAULT user" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="100" width="310" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="gas" value="&lt;b&gt;greenhouse_gases&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt; id : INTEGER NOT NULL&lt;br/&gt;name : VARCHAR(255) NOT NULL&lt;br/&gt;formula : VARCHAR(50) NULL&lt;br/&gt;global_warming_potential_100y : FLOAT NULL&lt;br/&gt;short_description : TEXT NULL&lt;br/&gt;status : VARCHAR(50) NOT NULL&lt;br/&gt;image_url : TEXT NOT NULL&lt;br/&gt;video_url : TEXT NOT NULL&lt;br/&gt;concentration_ppm : FLOAT NULL&lt;br/&gt;temperature_change_c : FLOAT NULL&lt;br/&gt;created_at : DATETIME NOT NULL&lt;br/&gt;&lt;b&gt;FK&lt;/b&gt; creator_id : INTEGER NULL → users.id&lt;br/&gt;published_at : DATETIME NULL" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="60" width="350" height="490" as="geometry"/>
+        </mxCell>
+        <mxCell id="likes" value="&lt;b&gt;likes&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK, FK&lt;/b&gt; user_id : INTEGER NOT NULL → users.id&lt;br/&gt;&lt;b&gt;PK, FK&lt;/b&gt; greenhouse_gas_id : INTEGER NOT NULL → greenhouse_gases.id&lt;br/&gt;&lt;br/&gt;Составной первичный ключ: (user_id, greenhouse_gas_id)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;strokeColor=#000000;fillColor=#ffffff;fontColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="245" y="720" width="340" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" value="создаёт (creator_id nullable)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="users" target="gas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="users" target="likes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;strokeColor=#000000;" edge="1" parent="1" source="gas" target="likes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

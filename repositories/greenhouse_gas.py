@@ -1,0 +1,336 @@
+from datetime import datetime
+
+from sqlalchemy import func, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.greenhouse_gas import GreenhouseGas
+from models.like import Like
+
+
+async def get_published_greenhouse_gases(
+    session: AsyncSession,
+    concentration: float | None = None,
+) -> list[GreenhouseGas]:
+    query = (
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.status == "опубликован"
+        )
+        .order_by(GreenhouseGas.id)
+    )
+
+    if concentration is not None:
+        query = query.where(
+            GreenhouseGas.concentration_ppm <= concentration
+        )
+
+    result = await session.execute(query)
+
+    return list(result.scalars().all())
+
+
+async def get_greenhouse_gas_by_id(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.id == greenhouse_gas_id,
+            GreenhouseGas.status == "опубликован",
+        )
+    )
+
+    return result.scalar_one_or_none()
+
+
+async def get_draft_greenhouse_gas(
+    session: AsyncSession,
+    creator_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.status == "черновик",
+            GreenhouseGas.creator_id == creator_id,
+        )
+        .order_by(GreenhouseGas.id)
+    )
+
+    return result.scalars().first()
+
+
+async def create_draft_greenhouse_gas(
+    session: AsyncSession,
+    name: str,
+    image_url: str,
+    video_url: str,
+    creator_id: int,
+) -> GreenhouseGas:
+    draft = GreenhouseGas(
+        name=name,
+        status="черновик",
+        image_url=image_url,
+        video_url=video_url,
+        creator_id=creator_id,
+    )
+
+    session.add(draft)
+
+    await session.commit()
+    await session.refresh(draft)
+
+    return draft
+
+
+async def publish_greenhouse_gas(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+    formula: str | None,
+    short_description: str | None,
+    global_warming_potential_100y: float | None,
+    concentration_ppm: float | None,
+    temperature_change_c: float | None,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.id == greenhouse_gas_id,
+            GreenhouseGas.status == "черновик",
+        )
+    )
+
+    greenhouse_gas = result.scalar_one_or_none()
+
+    if greenhouse_gas is None:
+        return None
+
+    greenhouse_gas.formula = formula
+    greenhouse_gas.short_description = short_description
+    greenhouse_gas.global_warming_potential_100y = (
+        global_warming_potential_100y
+    )
+    greenhouse_gas.concentration_ppm = concentration_ppm
+    greenhouse_gas.temperature_change_c = temperature_change_c
+    greenhouse_gas.status = "опубликован"
+    greenhouse_gas.published_at = datetime.utcnow()
+
+    await session.commit()
+    await session.refresh(greenhouse_gas)
+
+    return greenhouse_gas
+
+
+async def delete_greenhouse_gas(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+    creator_id: int,
+) -> bool:
+    result = await session.execute(
+        text(
+            """
+            UPDATE greenhouse_gases
+            SET status = 'удален'
+            WHERE id = :greenhouse_gas_id
+              AND creator_id = :creator_id
+              AND status <> 'удален'
+            """
+        ),
+        {
+            "greenhouse_gas_id": greenhouse_gas_id,
+            "creator_id": creator_id,
+        },
+    )
+    await session.commit()
+    return bool(result.rowcount)
+
+
+async def get_likes_counts(
+    session: AsyncSession,
+    greenhouse_gas_ids: list[int],
+) -> dict[int, int]:
+    if not greenhouse_gas_ids:
+        return {}
+
+    result = await session.execute(
+        select(
+            Like.greenhouse_gas_id,
+            func.count(Like.user_id),
+        )
+        .where(
+            Like.greenhouse_gas_id.in_(greenhouse_gas_ids)
+        )
+        .group_by(Like.greenhouse_gas_id)
+    )
+
+    return {
+        greenhouse_gas_id: likes_count
+        for greenhouse_gas_id, likes_count in result.all()
+    }
+
+
+async def create_api_draft_greenhouse_gas(
+    session: AsyncSession,
+    name: str,
+    formula: str | None,
+    short_description: str | None,
+    global_warming_potential_100y: float | None,
+    concentration_ppm: float | None,
+    temperature_change_c: float | None,
+    image_filename: str,
+    video_filename: str,
+    creator_id: int,
+) -> GreenhouseGas:
+    existing_draft = await get_draft_greenhouse_gas(
+        session=session,
+        creator_id=creator_id,
+    )
+
+    if existing_draft is not None:
+        raise ValueError(
+            "У пользователя уже существует черновик"
+        )
+
+    greenhouse_gas = GreenhouseGas(
+        name=name,
+        formula=formula,
+        short_description=short_description,
+        global_warming_potential_100y=(
+            global_warming_potential_100y
+        ),
+        concentration_ppm=concentration_ppm,
+        temperature_change_c=temperature_change_c,
+        status="черновик",
+        image_url=image_filename,
+        video_url=video_filename,
+        creator_id=creator_id,
+    )
+
+    session.add(greenhouse_gas)
+
+    await session.commit()
+    await session.refresh(greenhouse_gas)
+
+    return greenhouse_gas
+
+async def publish_api_greenhouse_gas(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+    creator_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.id == greenhouse_gas_id,
+            GreenhouseGas.creator_id == creator_id,
+            GreenhouseGas.status == "черновик",
+        )
+    )
+
+    greenhouse_gas = result.scalar_one_or_none()
+
+    if greenhouse_gas is None:
+        return None
+
+    greenhouse_gas.status = "опубликован"
+    greenhouse_gas.published_at = datetime.utcnow()
+
+    await session.commit()
+    await session.refresh(greenhouse_gas)
+
+    return greenhouse_gas
+
+async def get_next_published_greenhouse_gas(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.status == "опубликован",
+            GreenhouseGas.id > greenhouse_gas_id,
+        )
+        .order_by(GreenhouseGas.id)
+        .limit(1)
+    )
+
+    return result.scalar_one_or_none()
+
+async def get_user_liked_greenhouse_gas_ids(
+    session: AsyncSession,
+    user_id: int,
+    greenhouse_gas_ids: list[int],
+) -> set[int]:
+    if not greenhouse_gas_ids:
+        return set()
+
+    result = await session.execute(
+        select(Like.greenhouse_gas_id)
+        .where(
+            Like.user_id == user_id,
+            Like.greenhouse_gas_id.in_(greenhouse_gas_ids),
+        )
+    )
+
+    return set(result.scalars().all())
+
+
+async def set_greenhouse_gas_like(
+    session: AsyncSession,
+    user_id: int,
+    greenhouse_gas_id: int,
+    like: int,
+) -> bool:
+    result = await session.execute(
+        select(Like)
+        .where(
+            Like.user_id == user_id,
+            Like.greenhouse_gas_id == greenhouse_gas_id,
+        )
+    )
+
+    existing_like = result.scalar_one_or_none()
+
+    if like == 1:
+        if existing_like is None:
+            session.add(
+                Like(
+                    user_id=user_id,
+                    greenhouse_gas_id=greenhouse_gas_id,
+                )
+            )
+
+        await session.commit()
+        return True
+
+    if existing_like is not None:
+        await session.delete(existing_like)
+        await session.commit()
+
+    return False
+
+async def delete_api_greenhouse_gas(
+    session: AsyncSession,
+    greenhouse_gas_id: int,
+    creator_id: int,
+) -> GreenhouseGas | None:
+    result = await session.execute(
+        select(GreenhouseGas)
+        .where(
+            GreenhouseGas.id == greenhouse_gas_id,
+            GreenhouseGas.creator_id == creator_id,
+            GreenhouseGas.status != "удален",
+        )
+    )
+
+    greenhouse_gas = result.scalar_one_or_none()
+
+    if greenhouse_gas is None:
+        return None
+
+    greenhouse_gas.status = "удален"
+
+    await session.commit()
+    await session.refresh(greenhouse_gas)
+
+    return greenhouse_gas
