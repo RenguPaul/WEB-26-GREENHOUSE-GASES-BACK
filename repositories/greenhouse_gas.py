@@ -13,9 +13,7 @@ async def get_published_greenhouse_gases(
 ) -> list[GreenhouseGas]:
     query = (
         select(GreenhouseGas)
-        .where(
-            GreenhouseGas.status == "опубликован"
-        )
+        .where(GreenhouseGas.status == "опубликован")
         .order_by(GreenhouseGas.id)
     )
 
@@ -34,8 +32,7 @@ async def get_greenhouse_gas_by_id(
     greenhouse_gas_id: int,
 ) -> GreenhouseGas | None:
     result = await session.execute(
-        select(GreenhouseGas)
-        .where(
+        select(GreenhouseGas).where(
             GreenhouseGas.id == greenhouse_gas_id,
             GreenhouseGas.status == "опубликован",
         )
@@ -93,8 +90,7 @@ async def publish_greenhouse_gas(
     temperature_change_c: float | None,
 ) -> GreenhouseGas | None:
     result = await session.execute(
-        select(GreenhouseGas)
-        .where(
+        select(GreenhouseGas).where(
             GreenhouseGas.id == greenhouse_gas_id,
             GreenhouseGas.status == "черновик",
         )
@@ -141,7 +137,9 @@ async def delete_greenhouse_gas(
             "creator_id": creator_id,
         },
     )
+
     await session.commit()
+
     return bool(result.rowcount)
 
 
@@ -213,14 +211,18 @@ async def create_api_draft_greenhouse_gas(
 
     return greenhouse_gas
 
+
 async def publish_api_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
     creator_id: int,
+    short_description: str | None,
+    concentration_ppm: float,
+    global_warming_potential_100y: float,
+    temperature_change_c: float,
 ) -> GreenhouseGas | None:
     result = await session.execute(
-        select(GreenhouseGas)
-        .where(
+        select(GreenhouseGas).where(
             GreenhouseGas.id == greenhouse_gas_id,
             GreenhouseGas.creator_id == creator_id,
             GreenhouseGas.status == "черновик",
@@ -232,6 +234,13 @@ async def publish_api_greenhouse_gas(
     if greenhouse_gas is None:
         return None
 
+    greenhouse_gas.short_description = short_description
+    greenhouse_gas.concentration_ppm = concentration_ppm
+    greenhouse_gas.global_warming_potential_100y = (
+        global_warming_potential_100y
+    )
+    greenhouse_gas.temperature_change_c = temperature_change_c
+
     greenhouse_gas.status = "опубликован"
     greenhouse_gas.published_at = datetime.utcnow()
 
@@ -239,6 +248,7 @@ async def publish_api_greenhouse_gas(
     await session.refresh(greenhouse_gas)
 
     return greenhouse_gas
+
 
 async def get_next_published_greenhouse_gas(
     session: AsyncSession,
@@ -256,6 +266,7 @@ async def get_next_published_greenhouse_gas(
 
     return result.scalar_one_or_none()
 
+
 async def get_user_liked_greenhouse_gas_ids(
     session: AsyncSession,
     user_id: int,
@@ -265,8 +276,7 @@ async def get_user_liked_greenhouse_gas_ids(
         return set()
 
     result = await session.execute(
-        select(Like.greenhouse_gas_id)
-        .where(
+        select(Like.greenhouse_gas_id).where(
             Like.user_id == user_id,
             Like.greenhouse_gas_id.in_(greenhouse_gas_ids),
         )
@@ -282,8 +292,7 @@ async def set_greenhouse_gas_like(
     like: int,
 ) -> bool:
     result = await session.execute(
-        select(Like)
-        .where(
+        select(Like).where(
             Like.user_id == user_id,
             Like.greenhouse_gas_id == greenhouse_gas_id,
         )
@@ -309,14 +318,14 @@ async def set_greenhouse_gas_like(
 
     return False
 
+
 async def delete_api_greenhouse_gas(
     session: AsyncSession,
     greenhouse_gas_id: int,
     creator_id: int,
 ) -> GreenhouseGas | None:
     result = await session.execute(
-        select(GreenhouseGas)
-        .where(
+        select(GreenhouseGas).where(
             GreenhouseGas.id == greenhouse_gas_id,
             GreenhouseGas.creator_id == creator_id,
             GreenhouseGas.status != "удален",
