@@ -10,7 +10,10 @@ from fastapi import (
     UploadFile,
 )
 
-from api.dependencies import get_current_user_id, get_optional_current_user_id
+from api.dependencies import (
+    get_current_user_id,
+    get_optional_current_user_id,
+)
 from core.minio import (
     get_file_url,
     upload_file,
@@ -35,6 +38,7 @@ from schemas.greenhouse_gas import (
     GreenhouseGasDraftResponse,
     GreenhouseGasFeedItem,
     GreenhouseGasListItem,
+    GreenhouseGasPublishRequest,
     GreenhouseGasPublishResponse,
     LikeRequest,
 )
@@ -66,6 +70,7 @@ def get_media_url(
 def serialize_list_item(
     greenhouse_gas,
     current_user_id: int | None,
+    likes_count: int = 0,
 ) -> GreenhouseGasListItem:
     return GreenhouseGasListItem(
         id=greenhouse_gas.id,
@@ -78,11 +83,15 @@ def serialize_list_item(
         concentration_ppm=greenhouse_gas.concentration_ppm,
         temperature_change_c=greenhouse_gas.temperature_change_c,
         image_url=get_media_url(
-            greenhouse_gas.image_url,
+            get_file_url(greenhouse_gas.image_url)
+            if greenhouse_gas.image_url
+            else None,
             DEFAULT_IMAGE_URL,
         ),
         video_url=get_media_url(
-            greenhouse_gas.video_url,
+            get_file_url(greenhouse_gas.video_url)
+            if greenhouse_gas.video_url
+            else None,
             DEFAULT_VIDEO_URL,
         ),
         is_creator=(
@@ -91,6 +100,7 @@ def serialize_list_item(
             and greenhouse_gas.creator_id == current_user_id
             else 0
         ),
+        likes_count=likes_count,
     )
 
 
@@ -110,11 +120,15 @@ def serialize_published_item(
         concentration_ppm=greenhouse_gas.concentration_ppm,
         temperature_change_c=greenhouse_gas.temperature_change_c,
         image_url=get_media_url(
-            greenhouse_gas.image_url,
+            get_file_url(greenhouse_gas.image_url)
+            if greenhouse_gas.image_url
+            else None,
             DEFAULT_IMAGE_URL,
         ),
         video_url=get_media_url(
-            greenhouse_gas.video_url,
+            get_file_url(greenhouse_gas.video_url)
+            if greenhouse_gas.video_url
+            else None,
             DEFAULT_VIDEO_URL,
         ),
         is_liked=(
@@ -126,33 +140,24 @@ def serialize_published_item(
     )
 
 
-# ============================================================
-# ДОМЕН ПРИЛОЖЕНИЯ
-# ============================================================
-
-
 @router.get(
     "/greenhouse-gases",
     response_model=list[GreenhouseGasListItem],
     summary="Получить опубликованные парниковые газы",
     description=(
         "Публичный метод чтения. Авторизация не требуется. "
-        "При наличии действующей cookie поле is_creator отражает, "
-        "принадлежит ли запись текущему пользователю."
+        "Поддерживает серверную фильтрацию по концентрации."
     ),
-    responses={400: {"description": "Некорректная концентрация"}},
+    responses={
+        400: {"description": "Некорректная концентрация"}
+    },
 )
 async def get_greenhouse_gases(
     concentration: float | None = Query(default=None),
-    current_user_id: int | None = Depends(get_optional_current_user_id),
+    current_user_id: int | None = Depends(
+        get_optional_current_user_id
+    ),
 ):
-    """
-    GET /api/greenhouse-gases
-
-    Возвращает опубликованные парниковые газы.
-    Поддерживает серверную фильтрацию по концентрации.
-    """
-
     if concentration is not None and concentration <= 0:
         raise HTTPException(
             status_code=400,
@@ -165,12 +170,22 @@ async def get_greenhouse_gases(
             concentration=concentration,
         )
 
+        greenhouse_gas_ids = [
+            item.id for item in greenhouse_gases
+        ]
+
+        likes_counts = await get_likes_counts(
+            session=session,
+            greenhouse_gas_ids=greenhouse_gas_ids,
+        )
+
     return [
         serialize_list_item(
-            greenhouse_gas=greenhouse_gas,
+            greenhouse_gas=item,
             current_user_id=current_user_id,
+            likes_count=likes_counts.get(item.id, 0),
         )
-        for greenhouse_gas in greenhouse_gases
+        for item in greenhouse_gases
     ]
 
 
@@ -179,9 +194,8 @@ async def get_greenhouse_gases(
     response_model=list[GreenhouseGasFeedItem],
     summary="Получить ленту опубликованных парниковых газов",
     description=(
-        "Публичный метод чтения. Авторизация не требуется. "
-        "Для перехода к следующей записи передайте greenhouse_gas_id "
-        "и next=true. Для гостя is_liked всегда равен 0."
+        "Публичный метод чтения. Для следующей записи передайте "
+        "greenhouse_gas_id и next=true."
     ),
     responses={
         400: {"description": "Некорректные query-параметры"},
@@ -191,22 +205,10 @@ async def get_greenhouse_gases(
 async def get_published_greenhouse_gases_api(
     greenhouse_gas_id: int | None = Query(default=None),
     next: bool = Query(default=False),
-    current_user_id: int | None = Depends(get_optional_current_user_id),
+    current_user_id: int | None = Depends(
+        get_optional_current_user_id
+    ),
 ):
-    """
-    GET /api/greenhouse-gases/published-gases
-
-    Обычный запрос:
-        GET /api/greenhouse-gases/published-gases
-
-    Получение следующего опубликованного газа:
-        GET /api/greenhouse-gases/published-gases
-            ?greenhouse_gas_id=15&next=true
-
-    Это один и тот же GET-метод.
-    Query-параметры не создают новый HTTP-метод.
-    """
-
     if next and greenhouse_gas_id is None:
         raise HTTPException(
             status_code=400,
@@ -226,10 +228,6 @@ async def get_published_greenhouse_gases_api(
         )
 
     async with async_session_maker() as session:
-
-        # ----------------------------------------------------
-        # Режим "следующий опубликованный парниковый газ"
-        # ----------------------------------------------------
         if next:
             greenhouse_gas = (
                 await get_next_published_greenhouse_gas(
@@ -247,46 +245,16 @@ async def get_published_greenhouse_gases_api(
                     ),
                 )
 
-            greenhouse_gas_ids = [greenhouse_gas.id]
-
-            likes_counts = await get_likes_counts(
-                session=session,
-                greenhouse_gas_ids=greenhouse_gas_ids,
+            greenhouse_gases = [greenhouse_gas]
+        else:
+            greenhouse_gases = (
+                await get_published_greenhouse_gases(
+                    session=session,
+                )
             )
 
-            liked_greenhouse_gas_ids = set()
-            if current_user_id is not None:
-                liked_greenhouse_gas_ids = (
-                    await get_user_liked_greenhouse_gas_ids(
-                        session=session,
-                        user_id=current_user_id,
-                        greenhouse_gas_ids=greenhouse_gas_ids,
-                    )
-                )
-
-            return [
-                serialize_published_item(
-                    greenhouse_gas=greenhouse_gas,
-                    likes_count=likes_counts.get(
-                        greenhouse_gas.id,
-                        0,
-                    ),
-                    liked_greenhouse_gas_ids=(
-                        liked_greenhouse_gas_ids
-                    ),
-                )
-            ]
-
-        # ----------------------------------------------------
-        # Обычная лента опубликованных парниковых газов
-        # ----------------------------------------------------
-        greenhouse_gases = await get_published_greenhouse_gases(
-            session=session,
-        )
-
         greenhouse_gas_ids = [
-            greenhouse_gas.id
-            for greenhouse_gas in greenhouse_gases
+            item.id for item in greenhouse_gases
         ]
 
         likes_counts = await get_likes_counts(
@@ -295,6 +263,7 @@ async def get_published_greenhouse_gases_api(
         )
 
         liked_greenhouse_gas_ids = set()
+
         if current_user_id is not None:
             liked_greenhouse_gas_ids = (
                 await get_user_liked_greenhouse_gas_ids(
@@ -306,14 +275,11 @@ async def get_published_greenhouse_gases_api(
 
     return [
         serialize_published_item(
-            greenhouse_gas=greenhouse_gas,
-            likes_count=likes_counts.get(
-                greenhouse_gas.id,
-                0,
-            ),
+            greenhouse_gas=item,
+            likes_count=likes_counts.get(item.id, 0),
             liked_greenhouse_gas_ids=liked_greenhouse_gas_ids,
         )
-        for greenhouse_gas in greenhouse_gases
+        for item in greenhouse_gases
     ]
 
 
@@ -321,18 +287,18 @@ async def get_published_greenhouse_gases_api(
     "/greenhouse-gases/my-gas",
     response_model=GreenhouseGasDraftResponse,
     summary="Получить свой черновик",
-    description="Требуется действующая cookie сессии greenhouse_session.",
-    responses={401: {"description": "Не выполнен вход"}},
+    description=(
+        "Требуется действующая cookie сессии "
+        "greenhouse_session."
+    ),
+    responses={
+        401: {"description": "Не выполнен вход"},
+        404: {"description": "Черновик не найден"},
+    },
 )
 async def get_my_greenhouse_gas(
     current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    GET /api/greenhouse-gases/my-gas
-
-    Возвращает черновик текущего пользователя.
-    """
-
     async with async_session_maker() as session:
         greenhouse_gas = await get_draft_greenhouse_gas(
             session=session,
@@ -342,10 +308,7 @@ async def get_my_greenhouse_gas(
     if greenhouse_gas is None:
         raise HTTPException(
             status_code=404,
-            detail=(
-                "Парниковый газ текущего пользователя "
-                "не найден"
-            ),
+            detail="Черновик текущего пользователя не найден",
         )
 
     return GreenhouseGasDraftResponse(
@@ -359,11 +322,15 @@ async def get_my_greenhouse_gas(
         concentration_ppm=greenhouse_gas.concentration_ppm,
         temperature_change_c=greenhouse_gas.temperature_change_c,
         image_url=get_media_url(
-            greenhouse_gas.image_url,
+            get_file_url(greenhouse_gas.image_url)
+            if greenhouse_gas.image_url
+            else None,
             DEFAULT_IMAGE_URL,
         ),
         video_url=get_media_url(
-            greenhouse_gas.video_url,
+            get_file_url(greenhouse_gas.video_url)
+            if greenhouse_gas.video_url
+            else None,
             DEFAULT_VIDEO_URL,
         ),
     )
@@ -375,10 +342,13 @@ async def get_my_greenhouse_gas(
     status_code=201,
     summary="Создать черновик парникового газа",
     description=(
-        "Требуется авторизация. Создатель автоматически определяется "
-        "по cookie сессии; изображение и видео передаются файлами."
+        "Требуется авторизация. Создатель определяется по cookie; "
+        "изображение и видео передаются файлами."
     ),
-    responses={401: {"description": "Не выполнен вход"}, 409: {"description": "Черновик уже существует"}},
+    responses={
+        401: {"description": "Не выполнен вход"},
+        409: {"description": "Черновик уже существует"},
+    },
 )
 async def create_greenhouse_gas(
     name: str = Form(...),
@@ -392,20 +362,10 @@ async def create_greenhouse_gas(
     video: UploadFile = File(...),
     current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    POST /api/greenhouse-gases
-
-    Создание черновика парникового газа.
-    Изображение и видео передаются как файлы.
-    """
-
     if not name.strip():
         raise HTTPException(
             status_code=400,
-            detail=(
-                "Название парникового газа "
-                "не может быть пустым"
-            ),
+            detail="Название парникового газа не может быть пустым",
         )
 
     if concentration_ppm is not None and concentration_ppm <= 0:
@@ -426,14 +386,8 @@ async def create_greenhouse_gas(
         if existing_draft is not None:
             raise HTTPException(
                 status_code=409,
-                detail=(
-                    "У пользователя уже существует "
-                    "черновик"
-                ),
+                detail="У пользователя уже существует черновик",
             )
-
-    image_filename = None
-    video_filename = None
 
     try:
         image_filename = await upload_file(
@@ -449,16 +403,13 @@ async def create_greenhouse_gas(
         temperature_change_c = None
 
         if concentration_ppm is not None:
-            if concentration_ppm <= 0:
-                temperature_change_c = 0.0
-            else:
-                temperature_change_c = round(
-                    CLIMATE_SENSITIVITY_C
-                    * math.log2(
-                        concentration_ppm / REFERENCE_CO2_PPM
-                    ),
-                    1,
-                )
+            temperature_change_c = round(
+                CLIMATE_SENSITIVITY_C
+                * math.log2(
+                    concentration_ppm / REFERENCE_CO2_PPM
+                ),
+                1,
+            )
 
         async with async_session_maker() as session:
             greenhouse_gas = (
@@ -497,11 +448,13 @@ async def create_greenhouse_gas(
         id=greenhouse_gas.id,
         name=greenhouse_gas.name,
         status=greenhouse_gas.status,
-        image_url=get_file_url(
-            greenhouse_gas.image_url
+        image_url=get_media_url(
+            get_file_url(greenhouse_gas.image_url),
+            DEFAULT_IMAGE_URL,
         ),
-        video_url=get_file_url(
-            greenhouse_gas.video_url
+        video_url=get_media_url(
+            get_file_url(greenhouse_gas.video_url),
+            DEFAULT_VIDEO_URL,
         ),
     )
 
@@ -511,37 +464,46 @@ async def create_greenhouse_gas(
     response_model=GreenhouseGasPublishResponse,
     summary="Опубликовать свой черновик",
     description=(
-        "Требуется авторизация. Опубликовать можно только собственный "
-        "черновик; гость получает 401, чужая/отсутствующая запись — 404."
+        "Сохраняет характеристики и публикует только собственный "
+        "черновик текущего пользователя."
     ),
     responses={
         401: {"description": "Не выполнен вход"},
-        404: {"description": "Черновик не найден или принадлежит другому пользователю"},
+        404: {"description": "Черновик не найден"},
     },
 )
 async def publish_greenhouse_gas_api(
     greenhouse_gas_id: int,
+    data: GreenhouseGasPublishRequest,
     current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    PUT /api/greenhouse-gases/{id}/publish
-
-    Публикация черновика текущего пользователя.
-    """
+    temperature_change_c = round(
+        CLIMATE_SENSITIVITY_C
+        * math.log2(
+            data.concentration_ppm / REFERENCE_CO2_PPM
+        ),
+        1,
+    )
 
     async with async_session_maker() as session:
         greenhouse_gas = await publish_api_greenhouse_gas(
             session=session,
             greenhouse_gas_id=greenhouse_gas_id,
             creator_id=current_user_id,
+            short_description=data.short_description,
+            concentration_ppm=data.concentration_ppm,
+            global_warming_potential_100y=(
+                data.global_warming_potential_100y
+            ),
+            temperature_change_c=temperature_change_c,
         )
 
     if greenhouse_gas is None:
         raise HTTPException(
             status_code=404,
             detail=(
-                "Черновик не найден или "
-                "не принадлежит текущему пользователю"
+                "Черновик не найден или не принадлежит "
+                "текущему пользователю"
             ),
         )
 
@@ -549,11 +511,13 @@ async def publish_greenhouse_gas_api(
         id=greenhouse_gas.id,
         name=greenhouse_gas.name,
         status=greenhouse_gas.status,
-        image_url=get_file_url(
-            greenhouse_gas.image_url
+        image_url=get_media_url(
+            get_file_url(greenhouse_gas.image_url),
+            DEFAULT_IMAGE_URL,
         ),
-        video_url=get_file_url(
-            greenhouse_gas.video_url
+        video_url=get_media_url(
+            get_file_url(greenhouse_gas.video_url),
+            DEFAULT_VIDEO_URL,
         ),
         published_at=greenhouse_gas.published_at.isoformat(),
     )
@@ -562,31 +526,27 @@ async def publish_greenhouse_gas_api(
 @router.post(
     "/greenhouse-gases/{greenhouse_gas_id}/like",
     summary="Поставить или убрать лайк",
-    description="Требуется авторизация. Передайте like=1 для лайка или like=0 для его удаления.",
-    responses={401: {"description": "Не выполнен вход"}, 404: {"description": "Опубликованная запись не найдена"}},
+    description=(
+        "Требуется авторизация. like=1 — поставить лайк, "
+        "like=0 — убрать лайк."
+    ),
+    responses={
+        401: {"description": "Не выполнен вход"},
+        404: {"description": "Опубликованная запись не найдена"},
+    },
 )
 async def like_greenhouse_gas(
     greenhouse_gas_id: int,
     like_request: LikeRequest,
     current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    POST /api/greenhouse-gases/{id}/like
-
-    like=1 — поставить лайк.
-    like=0 — убрать лайк.
-    """
-
     async with async_session_maker() as session:
         greenhouse_gas = await get_greenhouse_gas_by_id(
             session=session,
             greenhouse_gas_id=greenhouse_gas_id,
         )
 
-        if (
-            greenhouse_gas is None
-            or greenhouse_gas.status != "опубликован"
-        ):
+        if greenhouse_gas is None:
             raise HTTPException(
                 status_code=404,
                 detail="Парниковый газ не найден",
@@ -617,20 +577,19 @@ async def like_greenhouse_gas(
 @router.delete(
     "/greenhouse-gases/{greenhouse_gas_id}",
     summary="Логически удалить собственную запись",
-    description="Требуется авторизация. Запись не удаляется физически; её статус меняется на удалённый.",
-    responses={401: {"description": "Не выполнен вход"}, 404: {"description": "Запись не найдена или принадлежит другому пользователю"}},
+    description=(
+        "Требуется авторизация. Запись не удаляется физически; "
+        "её статус меняется на удалённый."
+    ),
+    responses={
+        401: {"description": "Не выполнен вход"},
+        404: {"description": "Запись не найдена"},
+    },
 )
 async def delete_greenhouse_gas_api(
     greenhouse_gas_id: int,
     current_user_id: int = Depends(get_current_user_id),
 ):
-    """
-    DELETE /api/greenhouse-gases/{id}
-
-    Логическое удаление.
-    Удалять можно только собственный парниковый газ.
-    """
-
     async with async_session_maker() as session:
         greenhouse_gas = await delete_api_greenhouse_gas(
             session=session,
@@ -642,8 +601,8 @@ async def delete_greenhouse_gas_api(
         raise HTTPException(
             status_code=404,
             detail=(
-                "Парниковый газ не найден "
-                "или не принадлежит текущему пользователю"
+                "Парниковый газ не найден или не принадлежит "
+                "текущему пользователю"
             ),
         )
 
@@ -651,5 +610,3 @@ async def delete_greenhouse_gas_api(
         "id": greenhouse_gas.id,
         "status": greenhouse_gas.status,
     }
-
-

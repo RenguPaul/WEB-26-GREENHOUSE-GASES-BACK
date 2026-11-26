@@ -12,6 +12,7 @@ class GreenhouseGasListItem(BaseModel):
     image_url: str
     video_url: str
     is_creator: int
+    likes_count: int = 0
 
 
 class GreenhouseGasFeedItem(BaseModel):
@@ -63,6 +64,18 @@ class GreenhouseGasCreateRequest(BaseModel):
     concentration_ppm: float | None = Field(
         default=None,
         gt=0,
+    )
+
+
+class GreenhouseGasPublishRequest(BaseModel):
+    short_description: str | None = None
+    concentration_ppm: float = Field(
+        ...,
+        gt=0,
+    )
+    global_warming_potential_100y: float = Field(
+        ...,
+        ge=0,
     )
 
 
