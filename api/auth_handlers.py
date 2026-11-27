@@ -1,5 +1,6 @@
 import json
 import secrets
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -25,7 +26,10 @@ async def _create_session(request: Request, response: Response, user: User) -> N
     if redis is None:
         raise HTTPException(status_code=503, detail="Хранилище сессий Redis недоступно")
     token = secrets.token_urlsafe(32)
-    payload = json.dumps({"user_id": user.id})
+    payload = json.dumps({
+        "user_id": user.id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
     await run_session_script(request, "SET", f"session:{token}", payload, settings.SESSION_TTL_SECONDS)
     response.set_cookie(
         key=settings.SESSION_COOKIE_NAME,

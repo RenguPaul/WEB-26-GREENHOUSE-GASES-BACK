@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     REDIS_URL: str = "redis://localhost:6379/0"
     SESSION_COOKIE_NAME: str = "greenhouse_session"
-    SESSION_TTL_SECONDS: int = 86400
+    SESSION_TTL_SECONDS: int = 1200
     SESSION_COOKIE_SECURE: bool = False
 
     @property
